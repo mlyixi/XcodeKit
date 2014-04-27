@@ -11,6 +11,20 @@
 
 @implementation XCObjectRegistry
 
+- (id)init {
+    return [self initWithProjectPropertyList:[NSDictionary dictionary]];
+}
+
+- (id)initWithProjectPropertyList:(NSDictionary *)propertyList {
+    self = [super init];
+    
+    if (self) {
+        _projectPropertyList = [propertyList mutableCopy];
+    }
+    
+    return self;
+}
+
 - (NSInteger)objectVersion {
     return [self.projectPropertyList[@"objectVersion"] integerValue];
 }

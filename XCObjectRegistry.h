@@ -12,6 +12,8 @@
 @class XCResource;
 @interface XCObjectRegistry : NSObject
 
+- (id)initWithProjectPropertyList:(NSDictionary *)propertyList;
+
 @property (readonly, strong) NSMutableDictionary *projectPropertyList;
 @property (assign) NSInteger objectVersion;
 
