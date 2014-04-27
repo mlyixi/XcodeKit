@@ -43,7 +43,7 @@
 
 - (id)addResourceObjectOfClass:(Class)cls withProperties:(NSDictionary *)properties {
     NSAssert([cls isKindOfClass:[XCResource class]], @"Class %@ must inherit from XCResource", NSStringFromClass(cls));
-    XCObjectIdentifier *identifier = [[XCObjectIdentifier alloc] init];
+    XCObjectIdentifier *identifier = [[XCObjectIdentifier alloc] initWithTargetDescription:nil existingKeys:self.objectDictionary.allKeys];
     self.objectDictionary[identifier.key] = properties;
     
     return [[cls alloc] initWithIdentifier:identifier registry:self];
