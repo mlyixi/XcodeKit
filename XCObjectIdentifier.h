@@ -24,6 +24,9 @@
 /// This is the designated initializer.
 - (instancetype)initWithKey:(NSString *)key targetDescription:(NSString *)targetDescription;
 
+/// Gets whether or not the given string is a valid XCObjectIdentifier key.
++ (BOOL)isValidObjectIdentifierKey:(NSString *)str;
+
 #pragma mark Properties
 
 /// The randomly generated key string. This is composed of 24 uppercase hexadecimal characters.

@@ -7,8 +7,19 @@
 //
 
 #import "XCObjectIdentifier.h"
+#import "OnigRegexp.h"
 
 @implementation XCObjectIdentifier
+
++ (BOOL)isValidObjectIdentifierKey:(NSString *)str {
+    static OnigRegexp *regex;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        regex = [OnigRegexp compile:@"^[0-9A-F]$" ignorecase:YES multiline:NO];
+    });
+    
+    return [regex match:str] != nil;
+}
 
 + (NSString *)generateRandomKey {
     NSString *possibleKeyCharacters = @"0123456789ABCDEF";
