@@ -24,6 +24,9 @@
 /// This is the designated initializer.
 - (instancetype)initWithKey:(NSString *)key targetDescription:(NSString *)targetDescription;
 
+/// Creates an instance of \c XCObjectIdentifier with the given \c key .
+- (instancetype)initWithKey:(NSString *)key;
+
 /// Gets whether or not the given string is a valid XCObjectIdentifier key.
 + (BOOL)isValidObjectIdentifierKey:(NSString *)str;
 

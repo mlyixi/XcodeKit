@@ -69,6 +69,10 @@
     return self;
 }
 
+- (instancetype)initWithKey:(NSString *)key {
+    return [self initWithKey:key targetDescription:nil];
+}
+
 #pragma mark NSCoding
 
 + (BOOL)supportsSecureCoding {
