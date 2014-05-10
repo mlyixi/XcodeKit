@@ -21,4 +21,6 @@ extern NSString * const XCConfigurationNameRelease;
 @property (strong) NSString *name;
 @property (readonly, strong) NSMutableDictionary *buildSettings;
 
+- (NSString *)expandedBuildSettingValueForName:(NSString *)name;
+
 @end

@@ -35,4 +35,19 @@ NSString * const XCConfigurationNameRelease = @"Release";
     return self.properties[@"buildSettings"];
 }
 
+- (NSString *)expandedBuildSettingValueForName:(NSString *)name {
+    NSError *error;
+    NSRegularExpression * const settingPattern = [NSRegularExpression regularExpressionWithPattern:@"\\$\\(([^)]+)\\)" options:0 error:&error];
+    NSAssert(settingPattern != nil, @"Could not compile setting pattern: %@", error);
+    
+    NSString *setting = self.buildSettings[name];
+    NSMutableString *retval = [name mutableCopy];
+    [settingPattern enumerateMatchesInString:setting options:0 range:NSMakeRange(0, setting.length) usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
+        NSString *name = [setting substringWithRange:[result rangeAtIndex:1]];
+        [retval replaceCharactersInRange:result.range withString:[self expandedBuildSettingValueForName:name]];
+    }];
+    
+    return retval;
+}
+
 @end
