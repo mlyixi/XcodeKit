@@ -1,0 +1,134 @@
+%{
+#import <Foundation/Foundation.h>
+#import "NSString+BackslashEscaping.h"
+#import "XCObjectIdentifier.h"
+#import "XCObjectRegistry.h"
+#import "XCProject.h"
+
+static NSString *input = nil;
+static NSUInteger inputIndex = 0, inputLength = 0;
+static NSString * const outputKey = @"com.wjksun.xcodeproject.pbx-parser-output";
+static NSString * const cacheKey = @"com.wjksun.xcodeproject.pbx-parser-cache";
+
+#define YY_INPUT(buf, result, max) \
+    do { \
+        if (inputIndex > inputLength) {\
+            result = 0; \
+        } else { \
+            int c = (int)[input characterAtIndex:inputIndex++]; \
+            *(buf) = c; \
+            return 1; \
+        } \
+    } while (0)
+
+#define YY_LOCAL(T) static T
+#define YY_RULE(T) static T
+
+// These three lines are required because I must place an Objective-C object in
+// a C struct, and ARC normally forbids that. I must __bridge cast the object to
+// a regular pointer, and store that in the struct. The use of a cache is to prevent
+// any of the objects from being deallocated prematurely.
+#define YYSTYPE void *
+#define box(x) \
+    ({ \
+        NSDictionary *threadDict = [[NSThread currentThread] threadDictionary]; \
+        NSMutableSet *cache = threadDict[cacheKey]; \
+        [cache addObject:x]; \
+        ((__bridge void *) x); \
+    })
+#define unbox(x) ((__bridge id) x)
+%}
+
+File = InitialComment - root:Dictionary EOF {
+        NSMutableDictionary *threadDict = [[NSThread currentThread] threadDictionary];
+        threadDict[outputKey] = [[XCObjectRegistry alloc] initWithProjectPropertyList:unbox(root)];
+    }
+    | ( !EOF .) * EOF {
+        [NSException raise:XCInvalidProjectFileException format:@"Syntax error in .pbxproj file"];
+    }
+
+InitialComment = '//' ( !EOL .)* EOL
+
+Dictionary = '{' - contents:DictionaryContents - '}' { $$ = contents; }
+    | '{' - '}' { $$ = box([NSDictionary dictionary]); }
+
+DictionaryContents = existing:DictionaryContents - dictKey:String - EQUALS - value:Value - SEMI {
+        NSMutableDictionary *existingDict = unbox(existing);
+        existingDict[unbox(dictKey)] = unbox(value);
+        $$ = box(existingDict);
+    }
+    | dictKey:String - EQUALS - value:Value - SEMI {
+        NSMutableDictionary *existingDict = [NSMutableDictionary dictionary];
+        existingDict[unbox(dictKey)] = unbox(value);
+        $$ = box(existingDict);
+    }
+
+Array = '(' - contents:ArrayContents - COMMA? - ')' { $$ = contents; }
+    | '(' - ')' { $$ = box([NSArray array]); }
+
+ArrayContents = existing:ArrayContents - COMMA - obj:Value {
+        NSMutableArray *array = unbox(existing);
+        [array addObject:unbox(obj)];
+        $$ = box(array);
+    } |
+    obj:Value {
+        NSMutableArray *newArray = [NSMutableArray array];
+        [newArray addObject:unbox(obj)];
+        $$ = box(newArray);
+    }
+
+String = < [a-zA-Z0-9_]+ > {
+        $$ = box([NSString stringWithUTF8String:yytext]);
+    } |
+    '"' < ( [^"] | '\\\"' )* > '"' { $$ = box([[NSString stringWithUTF8String:yytext] unescapedString]); }
+
+Value = 'YES' { $$ = box(@YES); }
+    | 'NO' { $$ = box(@NO); }
+    | ident:ObjectIdentifier { $$ = ident; }
+    | s:String { $$ = s; }
+    | n:Integer { $$ = n; }
+    | dict:Dictionary { $$ = dict; }
+    | ary:Array { $$ = ary; }
+
+ObjectIdentifier = objKey:ObjectKey - comment:ObjectComment {
+        XCObjectIdentifier *ident = [[XCObjectIdentifier alloc] initWithKey:unbox(objKey) targetDescription:unbox(comment)];
+        $$ = box(ident);
+    }
+    | objKey:ObjectKey {
+        XCObjectIdentifier *ident = [[XCObjectIdentifier alloc] initWithKey:unbox(objKey)];
+        $$ = box(ident);
+    }
+ObjectKey = < [a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9] > { $$ = box([NSString stringWithUTF8String:yytext]); }
+ObjectComment = '/*' - < (!'*/' .)+ > - '*/' { $$ = box([NSString stringWithUTF8String:yytext]); }
+
+Integer = < [0-9]+ > {
+        NSString *str = [NSString stringWithUTF8String:yytext];
+        $$ = box(@([str integerValue]));
+    }
+
+- = [ \t\r\n]*
+EQUALS = '='
+COMMA = ','
+SEMI = ';'
+EOL = '\n' | '\r\n' | '\r'
+EOF = !.
+
+%%
+
+XCObjectRegistry *XCParsePBXProjectFile(NSString *source) {
+    input = source;
+    inputIndex = 0;
+    inputLength = source.length;
+    
+    NSMutableDictionary *threadDict = [[NSThread currentThread] threadDictionary];
+    [threadDict removeObjectForKey:outputKey];
+    threadDict[cacheKey] = [NSMutableSet set];
+    
+    yyparse();
+    
+    threadDict = [[NSThread currentThread] threadDictionary];
+    XCObjectRegistry *retval = threadDict[outputKey];
+    [threadDict removeObjectForKey:outputKey];
+    [threadDict removeObjectForKey:cacheKey];
+    return retval;
+}
