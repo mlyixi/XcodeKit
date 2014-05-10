@@ -96,7 +96,7 @@ NSString * const XCFileReferencePathInBuiltProductsDirectory = @"BUILT_PRODUCTS_
     NSMutableDictionary *retval = [defaultProperties copy];
     [retval addEntriesFromDictionary:properties];
     retval[@"name"] = name;
-    retval[@"path"] = [NSString stringWithFormat:@"usr/lib/%@", name];
+    retval[@"path"] = [NSString stringWithFormat:@"%@.app", name];
     
     return [registry addResourceObjectOfClass:[self class] withProperties:retval];
 }
