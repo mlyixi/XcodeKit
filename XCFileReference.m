@@ -59,7 +59,7 @@ NSString * const XCFileReferencePathInBuiltProductsDirectory = @"BUILT_PRODUCTS_
     NSMutableDictionary *retval = [defaultProperties copy];
     [retval addEntriesFromDictionary:properties];
     retval[@"name"] = [name.pathExtension isEqualToString:@"framework"] ? [name stringByDeletingPathExtension] : name;
-    retval[@"path"] = [NSString stringWithFormat:@"System/Library/Frameworks/%@", retval[@"name"]];
+    retval[@"path"] = [NSString stringWithFormat:@"System/Library/Frameworks/%@.framework", retval[@"name"]];
     
     return [registry addResourceObjectOfClass:[self class] withProperties:retval];
 }
