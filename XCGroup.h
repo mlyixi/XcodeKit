@@ -25,3 +25,9 @@
 - (void)removeFromParentGroup;
 
 @end
+
+#pragma mark -
+
+@interface XCVariantGroup : XCGroup
+
+@end

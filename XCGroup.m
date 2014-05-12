@@ -11,12 +11,19 @@
 
 @implementation XCGroup
 
++ (NSString *)propertiesClassTypeName {
+    // This method exists to allow XCVariantGroup to supply its own isa for
+    // the properties of instances of that subclass, without having to reimplement
+    // the rest of +createLogicalGroupWithName:inRegistry:. DRY, anyone?
+    return @"PBXGroup";
+}
+
 + (XCGroup *)createLogicalGroupWithName:(NSString *)name inRegistry:(XCObjectRegistry *)registry {
     static NSMutableDictionary *defaultProperties;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         defaultProperties = [NSMutableDictionary dictionary];
-        defaultProperties[@"isa"] = @"PBXGroup";
+        defaultProperties[@"isa"] = [[self class] propertiesClassTypeName];
         defaultProperties[@"sourceTree"] = @"<group>";
         defaultProperties[@"children"] = [NSMutableArray array];
     });
@@ -82,6 +89,16 @@
     
     [self.parentGroup removeChild:self];
     [self.registry removeResourceObjectWithIdentifier:self.identifier];
+}
+
+@end
+
+#pragma mark -
+
+@implementation XCVariantGroup
+
++ (NSString *)propertiesClassTypeName {
+    return @"PBXVariantGroup";
 }
 
 @end
