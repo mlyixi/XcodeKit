@@ -14,7 +14,7 @@ NSString * const XCFileReferencePathInBuiltProductsDirectory = @"BUILT_PRODUCTS_
 
 @implementation XCFileReference
 
-+ (XCFileReference *)fileReferenceForRegularFileInRegistry:(XCObjectRegistry *)registry additionalProperties:(NSDictionary *)properties {
++ (XCFileReference *)createFileReferenceForRegularFileInRegistry:(XCObjectRegistry *)registry additionalProperties:(NSDictionary *)properties {
     static NSMutableDictionary *defaultProperties;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -28,7 +28,7 @@ NSString * const XCFileReferencePathInBuiltProductsDirectory = @"BUILT_PRODUCTS_
     return [registry addResourceObjectOfClass:[self class] withProperties:retval];
 }
 
-+ (XCFileReference *)fileReferenceForFrameworkWithName:(NSString *)name path:(NSString *)path inRegistry:(XCObjectRegistry *)registry additionalProperties:(NSDictionary *)properties {
++ (XCFileReference *)createFileReferenceForFrameworkWithName:(NSString *)name path:(NSString *)path inRegistry:(XCObjectRegistry *)registry additionalProperties:(NSDictionary *)properties {
     static NSMutableDictionary *defaultProperties;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -46,7 +46,7 @@ NSString * const XCFileReferencePathInBuiltProductsDirectory = @"BUILT_PRODUCTS_
     return [registry addResourceObjectOfClass:[self class] withProperties:retval];
 }
 
-+ (XCFileReference *)fileReferenceForSDKFrameworkWithName:(NSString *)name inRegistry:(XCObjectRegistry *)registry additionalProperties:(NSDictionary *)properties {
++ (XCFileReference *)createFileReferenceForSDKFrameworkWithName:(NSString *)name inRegistry:(XCObjectRegistry *)registry additionalProperties:(NSDictionary *)properties {
     static NSMutableDictionary *defaultProperties;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -64,7 +64,7 @@ NSString * const XCFileReferencePathInBuiltProductsDirectory = @"BUILT_PRODUCTS_
     return [registry addResourceObjectOfClass:[self class] withProperties:retval];
 }
 
-+ (XCFileReference *)fileReferenceForSDKLibraryWithName:(NSString *)name inRegistry:(XCObjectRegistry *)registry additionalProperties:(NSDictionary *)properties {
++ (XCFileReference *)createFileReferenceForSDKLibraryWithName:(NSString *)name inRegistry:(XCObjectRegistry *)registry additionalProperties:(NSDictionary *)properties {
     static NSMutableDictionary *defaultProperties;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -82,7 +82,7 @@ NSString * const XCFileReferencePathInBuiltProductsDirectory = @"BUILT_PRODUCTS_
     return [registry addResourceObjectOfClass:[self class] withProperties:retval];
 }
 
-+ (XCFileReference *)fileReferenceForApplicationProductWithName:(NSString *)name inRegistry:(XCObjectRegistry *)registry additionalProperties:(NSDictionary *)properties {
++ (XCFileReference *)createFileReferenceForApplicationProductWithName:(NSString *)name inRegistry:(XCObjectRegistry *)registry additionalProperties:(NSDictionary *)properties {
     static NSMutableDictionary *defaultProperties;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{

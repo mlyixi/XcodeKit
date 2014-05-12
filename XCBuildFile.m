@@ -10,15 +10,15 @@
 
 @implementation XCBuildFile
 
-+ (XCBuildFile *)buildFileWithFileReference:(XCFileReference *)fileReference inRegistry:(XCObjectRegistry *)registry {
-    return [self buildFileWithFileReference:fileReference buildSettings:nil inRegistry:registry];
++ (XCBuildFile *)createBuildFileWithFileReference:(XCFileReference *)fileReference inRegistry:(XCObjectRegistry *)registry {
+    return [self createBuildFileWithFileReference:fileReference buildSettings:nil inRegistry:registry];
 }
 
-+ (XCBuildFile *)buildFileWithFileReference:(XCFileReference *)fileReference buildSettings:(NSDictionary *)buildSettings inRegistry:(XCObjectRegistry *)registry {
-    return [self buildFileWithFileReference:fileReference buildSettings:buildSettings inRegistry:registry additionalProperties:nil];
++ (XCBuildFile *)createBuildFileWithFileReference:(XCFileReference *)fileReference buildSettings:(NSDictionary *)buildSettings inRegistry:(XCObjectRegistry *)registry {
+    return [self createBuildFileWithFileReference:fileReference buildSettings:buildSettings inRegistry:registry additionalProperties:nil];
 }
 
-+ (XCBuildFile *)buildFileWithFileReference:(XCFileReference *)fileReference buildSettings:(NSDictionary *)buildSettings inRegistry:(XCObjectRegistry *)registry additionalProperties:(NSDictionary *)properties {
++ (XCBuildFile *)createBuildFileWithFileReference:(XCFileReference *)fileReference buildSettings:(NSDictionary *)buildSettings inRegistry:(XCObjectRegistry *)registry additionalProperties:(NSDictionary *)properties {
     static NSMutableDictionary *defaultProperties;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{

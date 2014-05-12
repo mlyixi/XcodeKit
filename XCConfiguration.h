@@ -14,7 +14,7 @@ extern NSString * const XCConfigurationNameRelease;
 @interface XCConfiguration : XCResource
 
 // Note that this method doesn't add any values to the instance's buildSettings property.
-+ (XCConfiguration *)configurationWithName:(NSString *)name inRegistry:(XCObjectRegistry *)registry;
++ (XCConfiguration *)createConfigurationWithName:(NSString *)name inRegistry:(XCObjectRegistry *)registry;
 
 #pragma mark Properties
 

@@ -50,7 +50,7 @@
 
 @interface XCLinkFrameworksBuildPhase : XCBuildPhase
 
-+ (XCLinkFrameworksBuildPhase *)linkFrameworksBuildPhaseInRegistry:(XCObjectRegistry *)registry;
++ (XCLinkFrameworksBuildPhase *)createLinkFrameworksBuildPhaseInRegistry:(XCObjectRegistry *)registry;
 
 @end
 
@@ -58,7 +58,7 @@
 
 @interface XCCompileSourcesBuildPhase : XCBuildPhase
 
-+ (XCCompileSourcesBuildPhase *)compileSourcesBuildPhaseInRegistry:(XCObjectRegistry *)registry;
++ (XCCompileSourcesBuildPhase *)createCompileSourcesBuildPhaseInRegistry:(XCObjectRegistry *)registry;
 
 - (void)addBuildFileWithReference:(XCFileReference *)reference useAutomaticReferenceCounting:(BOOL)useARC buildSettings:(NSDictionary *)dictionary;
 
@@ -68,7 +68,7 @@
 
 @interface XCCopyResourcesBuildPhase : XCBuildPhase
 
-+ (XCCopyResourcesBuildPhase *)copyResourcesBuildPhaseInRegistry:(XCObjectRegistry *)registry;
++ (XCCopyResourcesBuildPhase *)createCopyResourcesBuildPhaseInRegistry:(XCObjectRegistry *)registry;
 
 @end
 
@@ -76,8 +76,8 @@
 
 @interface XCRunScriptBuildPhase : XCBuildPhase
 
-+ (XCRunScriptBuildPhase *)runScriptBuildPhaseWithScript:(NSString *)source inRegistry:(XCObjectRegistry *)registry; // interpreter defaults to /bin/sh
-+ (XCRunScriptBuildPhase *)runScriptBuildPhaseWithScript:(NSString *)source interpreterPath:(NSString *)interpreter inRegistry:(XCObjectRegistry *)registry;
++ (XCRunScriptBuildPhase *)createRunScriptBuildPhaseWithScript:(NSString *)source inRegistry:(XCObjectRegistry *)registry; // interpreter defaults to /bin/sh
++ (XCRunScriptBuildPhase *)createRunScriptBuildPhaseWithScript:(NSString *)source interpreterPath:(NSString *)interpreter inRegistry:(XCObjectRegistry *)registry;
 
 @property (assign) BOOL runOnlyWhenInstalling;
 @property (strong) NSString *scriptSource;
@@ -94,7 +94,7 @@
 
 @interface XCCopyHeadersBuildPhase : XCBuildPhase
 
-+ (XCCopyHeadersBuildPhase *)copyHeadersBuildPhaseInRegistry:(XCObjectRegistry *)registry;
++ (XCCopyHeadersBuildPhase *)createCopyHeadersBuildPhaseInRegistry:(XCObjectRegistry *)registry;
 
 - (void)addPublicHeaderFileWithReference:(XCFileReference *)reference buildSettings:(NSDictionary *)dictionary;
 - (void)addPrivateHeaderFileWithReference:(XCFileReference *)reference buildSettings:(NSDictionary *)dictionary;
@@ -118,14 +118,9 @@ typedef NS_ENUM(NSInteger, XCCopyFilesDestination) {
 
 @interface XCCopyFilesBuildPhase : XCBuildPhase
 
-+ (XCCopyFilesBuildPhase *)copyFilesBuildPhaseWithName:(NSString *)name
-                                           destination:(XCCopyFilesDestination)destination
-                               destinationSubdirectory:(NSString *)subdir
-                                            inRegistry:(XCObjectRegistry *)registry;
++ (XCCopyFilesBuildPhase *)createCopyFilesBuildPhaseWithName:(NSString *)name destination:(XCCopyFilesDestination)destination destinationSubdirectory:(NSString *)subdir inRegistry:(XCObjectRegistry *)registry;
 
-+ (XCCopyFilesBuildPhase *)copyFilesBuildPhaseWithDestination:(XCCopyFilesDestination)destination
-                                      destinationSubdirectory:(NSString *)subdir
-                                                   inRegistry:(XCObjectRegistry *)registry;
++ (XCCopyFilesBuildPhase *)createCopyFilesBuildPhaseWithDestination:(XCCopyFilesDestination)destination destinationSubdirectory:(NSString *)subdir inRegistry:(XCObjectRegistry *)registry;
 
 @property (assign) BOOL copyOnlyWhenInstalling;
 @property (assign) XCCopyFilesDestination destination;

@@ -11,7 +11,7 @@
 
 @interface XCConfigurationList : XCResource
 
-+ (XCConfigurationList *)configurationListInRegistry:(XCObjectRegistry *)registry;
++ (XCConfigurationList *)createConfigurationListInRegistry:(XCObjectRegistry *)registry;
 
 - (NSArray *)configurations;
 - (void)addConfigurationWithName:(NSString *)configName;

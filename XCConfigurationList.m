@@ -10,7 +10,7 @@
 
 @implementation XCConfigurationList
 
-+ (XCConfigurationList *)configurationListInRegistry:(XCObjectRegistry *)registry {
++ (XCConfigurationList *)createConfigurationListInRegistry:(XCObjectRegistry *)registry {
     static NSMutableDictionary *defaultProperties;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -39,7 +39,7 @@
 }
 
 - (void)addConfigurationWithName:(NSString *)configName block:(void (^)(XCConfiguration *configuration))block {
-    XCConfiguration *configuration = [XCConfiguration configurationWithName:configName inRegistry:self.registry];
+    XCConfiguration *configuration = [XCConfiguration createConfigurationWithName:configName inRegistry:self.registry];
     [self.properties[@"buildConfigurations"] addObject:configuration.identifier];
     
     if (block != NULL) block(configuration);

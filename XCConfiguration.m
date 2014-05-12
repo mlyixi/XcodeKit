@@ -13,7 +13,7 @@ NSString * const XCConfigurationNameRelease = @"Release";
 
 @implementation XCConfiguration
 
-+ (XCConfiguration *)configurationWithName:(NSString *)name inRegistry:(XCObjectRegistry *)registry {
++ (XCConfiguration *)createConfigurationWithName:(NSString *)name inRegistry:(XCObjectRegistry *)registry {
     NSMutableDictionary *finalProperties = [[NSMutableDictionary alloc] init];
     finalProperties[@"name"] = name;
     finalProperties[@"buildSettings"] = [NSMutableDictionary dictionary];

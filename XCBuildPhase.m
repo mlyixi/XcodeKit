@@ -62,7 +62,7 @@
     if ([self buildFileWithPath:reference.path]) return;
     if ([self buildFileWithName:reference.name]) return;
     
-    XCBuildFile *file = [XCBuildFile buildFileWithFileReference:reference buildSettings:dictionary inRegistry:self.registry];
+    XCBuildFile *file = [XCBuildFile createBuildFileWithFileReference:reference buildSettings:dictionary inRegistry:self.registry];
     [self.registry setResourceObject:file];
     [self.properties[@"files"] addObject:file.identifier];
 }
@@ -73,7 +73,7 @@
 
 @implementation XCLinkFrameworksBuildPhase
 
-+ (XCLinkFrameworksBuildPhase *)linkFrameworksBuildPhaseInRegistry:(XCObjectRegistry *)registry {
++ (XCLinkFrameworksBuildPhase *)createLinkFrameworksBuildPhaseInRegistry:(XCObjectRegistry *)registry {
     static NSMutableDictionary *defaultProperties;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -93,7 +93,7 @@
 
 @implementation XCCompileSourcesBuildPhase
 
-+ (XCCompileSourcesBuildPhase *)compileSourcesBuildPhaseInRegistry:(XCObjectRegistry *)registry {
++ (XCCompileSourcesBuildPhase *)createCompileSourcesBuildPhaseInRegistry:(XCObjectRegistry *)registry {
     static NSMutableDictionary *defaultProperties;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -128,7 +128,7 @@
 
 @implementation XCCopyResourcesBuildPhase
 
-+ (XCCopyResourcesBuildPhase *)copyResourcesBuildPhaseInRegistry:(XCObjectRegistry *)registry {
++ (XCCopyResourcesBuildPhase *)createCopyResourcesBuildPhaseInRegistry:(XCObjectRegistry *)registry {
     static NSMutableDictionary *defaultProperties;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -148,11 +148,11 @@
 
 @implementation XCRunScriptBuildPhase
 
-+ (XCRunScriptBuildPhase *)runScriptBuildPhaseWithScript:(NSString *)source inRegistry:(XCObjectRegistry *)registry {
-    return [self runScriptBuildPhaseWithScript:source interpreterPath:@"/bin/sh" inRegistry:registry];
++ (XCRunScriptBuildPhase *)createRunScriptBuildPhaseWithScript:(NSString *)source inRegistry:(XCObjectRegistry *)registry {
+    return [self createRunScriptBuildPhaseWithScript:source interpreterPath:@"/bin/sh" inRegistry:registry];
 }
 
-+ (XCRunScriptBuildPhase *)runScriptBuildPhaseWithScript:(NSString *)source interpreterPath:(NSString *)interpreter inRegistry:(XCObjectRegistry *)registry {
++ (XCRunScriptBuildPhase *)createRunScriptBuildPhaseWithScript:(NSString *)source interpreterPath:(NSString *)interpreter inRegistry:(XCObjectRegistry *)registry {
     static NSMutableDictionary *defaultProperties;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -230,7 +230,7 @@
 
 @implementation XCCopyHeadersBuildPhase
 
-+ (XCCopyHeadersBuildPhase *)copyHeadersBuildPhaseInRegistry:(XCObjectRegistry *)registry {
++ (XCCopyHeadersBuildPhase *)createCopyHeadersBuildPhaseInRegistry:(XCObjectRegistry *)registry {
     static NSMutableDictionary *defaultProperties;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -258,13 +258,13 @@
 
 @implementation XCCopyFilesBuildPhase
 
-+ (XCCopyFilesBuildPhase *)copyFilesBuildPhaseWithName:(NSString *)name destination:(XCCopyFilesDestination)destination destinationSubdirectory:(NSString *)subdir inRegistry:(XCObjectRegistry *)registry {
-    XCCopyFilesBuildPhase *phase = [self copyFilesBuildPhaseWithDestination:destination destinationSubdirectory:subdir inRegistry:registry];
++ (XCCopyFilesBuildPhase *)createCopyFilesBuildPhaseWithName:(NSString *)name destination:(XCCopyFilesDestination)destination destinationSubdirectory:(NSString *)subdir inRegistry:(XCObjectRegistry *)registry {
+    XCCopyFilesBuildPhase *phase = [self createCopyFilesBuildPhaseWithDestination:destination destinationSubdirectory:subdir inRegistry:registry];
     phase.properties[@"name"] = name;
     return phase;
 }
 
-+ (XCCopyFilesBuildPhase *)copyFilesBuildPhaseWithDestination:(XCCopyFilesDestination)destination destinationSubdirectory:(NSString *)subdir inRegistry:(XCObjectRegistry *)registry {
++ (XCCopyFilesBuildPhase *)createCopyFilesBuildPhaseWithDestination:(XCCopyFilesDestination)destination destinationSubdirectory:(NSString *)subdir inRegistry:(XCObjectRegistry *)registry {
     static NSMutableDictionary *defaultProperties;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{

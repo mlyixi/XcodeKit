@@ -11,9 +11,9 @@
 
 @interface XCBuildFile : XCResource
 
-+ (XCBuildFile *)buildFileWithFileReference:(XCFileReference *)fileReference inRegistry:(XCObjectRegistry *)registry;
-+ (XCBuildFile *)buildFileWithFileReference:(XCFileReference *)fileReference buildSettings:(NSDictionary *)buildSettings inRegistry:(XCObjectRegistry *)registry;
-+ (XCBuildFile *)buildFileWithFileReference:(XCFileReference *)fileReference buildSettings:(NSDictionary *)buildSettings inRegistry:(XCObjectRegistry *)registry additionalProperties:(NSDictionary *)properties;
++ (XCBuildFile *)createBuildFileWithFileReference:(XCFileReference *)fileReference inRegistry:(XCObjectRegistry *)registry;
++ (XCBuildFile *)createBuildFileWithFileReference:(XCFileReference *)fileReference buildSettings:(NSDictionary *)buildSettings inRegistry:(XCObjectRegistry *)registry;
++ (XCBuildFile *)createBuildFileWithFileReference:(XCFileReference *)fileReference buildSettings:(NSDictionary *)buildSettings inRegistry:(XCObjectRegistry *)registry additionalProperties:(NSDictionary *)properties;
 
 #pragma mark Properties
 
