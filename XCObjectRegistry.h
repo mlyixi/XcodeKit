@@ -25,8 +25,6 @@
 - (NSDictionary *)propertiesForObjectWithIdentifier:(XCObjectIdentifier *)identifier;
 
 - (id)addResourceObjectOfClass:(Class)cls withProperties:(NSDictionary *)properties;
-- (id)addResourceObjectOfClass:(Class)cls withProperties:(NSDictionary *)properties description:(NSString *)objectDescription;
-- (id)addResourceObjectOfClass:(Class)cls withProperties:(NSDictionary *)properties identifier:(XCObjectIdentifier *)identifier;
 - (void)setResourceObject:(XCResource *)resource;
 - (void)removeResourceObjectWithIdentifier:(XCObjectIdentifier *)identifier;
 

@@ -10,9 +10,6 @@
 #import "XCResource.h"
 
 @implementation XCObjectRegistry
-{
-    NSMutableDictionary *identifierDescriptions;
-}
 
 - (id)init {
     return [self initWithProjectPropertyList:[NSDictionary dictionary]];
@@ -23,7 +20,6 @@
     
     if (self) {
         _projectPropertyList = [propertyList mutableCopy];
-        identifierDescriptions = [NSMutableDictionary dictionary];
     }
     
     return self;
@@ -60,19 +56,10 @@
 }
 
 - (id)addResourceObjectOfClass:(Class)cls withProperties:(NSDictionary *)properties {
-    return [self addResourceObjectOfClass:cls withProperties:properties description:nil];
-}
-
-- (id)addResourceObjectOfClass:(Class)cls withProperties:(NSDictionary *)properties description:(NSString *)objectDescription {
-    XCObjectIdentifier *identifier = [[XCObjectIdentifier alloc] initWithTargetDescription:objectDescription existingKeys:self.objectDictionary.allKeys];
-    return [self addResourceObjectOfClass:cls withProperties:properties identifier:identifier];
-}
-
-- (id)addResourceObjectOfClass:(Class)cls withProperties:(NSDictionary *)properties identifier:(XCObjectIdentifier *)identifier {
     NSAssert([cls isKindOfClass:[XCResource class]], @"Class %@ must inherit from XCResource", NSStringFromClass(cls));
-    self.objectDictionary[identifier.key] = properties;
     
-    identifierDescriptions[identifier.key] = identifier.targetDescription;
+    XCObjectIdentifier *identifier = [[XCObjectIdentifier alloc] initWithTargetDescription:nil existingKeys:self.objectDictionary.allKeys];
+    self.objectDictionary[identifier.key] = properties;
     return [[cls alloc] initWithIdentifier:identifier registry:self];
 }
 
