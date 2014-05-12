@@ -12,6 +12,7 @@ extern NSString * const XCFileReferencePathInGroup;
 extern NSString * const XCFileReferencePathInSDK;
 extern NSString * const XCFileReferencePathInBuiltProductsDirectory;
 
+@class XCGroup;
 @interface XCFileReference : XCResource
 
 + (XCFileReference *)createFileReferenceForRegularFileInRegistry:(XCObjectRegistry *)registry additionalProperties:(NSDictionary *)properties;
@@ -20,7 +21,11 @@ extern NSString * const XCFileReferencePathInBuiltProductsDirectory;
 + (XCFileReference *)createFileReferenceForSDKLibraryWithName:(NSString *)name inRegistry:(XCObjectRegistry *)registry additionalProperties:(NSDictionary *)properties;
 + (XCFileReference *)createFileReferenceForApplicationProductWithName:(NSString *)name inRegistry:(XCObjectRegistry *)registry additionalProperties:(NSDictionary *)properties;
 
+- (void)removeFromParentGroup;
+
 #pragma mark Properties
+
+@property (strong) XCGroup *parentGroup;
 
 @property (strong) NSString *name;
 @property (strong) NSString *path;

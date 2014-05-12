@@ -7,6 +7,7 @@
 //
 
 #import "XCFileReference.h"
+#import "XCGroup.h"
 
 NSString * const XCFileReferencePathInGroup = @"<group>";
 NSString * const XCFileReferencePathInSDK = @"SDKROOT";
@@ -99,6 +100,11 @@ NSString * const XCFileReferencePathInBuiltProductsDirectory = @"BUILT_PRODUCTS_
     retval[@"path"] = [NSString stringWithFormat:@"%@.app", name];
     
     return [registry addResourceObjectOfClass:[self class] withProperties:retval];
+}
+
+- (void)removeFromParentGroup {
+    [self.parentGroup removeChild:self];
+    [self.registry removeResourceObjectWithIdentifier:self.identifier];
 }
 
 #pragma mark Properties
