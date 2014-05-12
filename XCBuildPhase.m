@@ -84,7 +84,7 @@
         defaultProperties[@"runOnlyForDeploymentPostprocessing"] = @"0";
     });
     
-    return [registry addResourceObjectOfClass:[self class] withProperties:defaultProperties];
+    return [registry addResourceObjectOfClass:[self class] withProperties:[defaultProperties copy]];
 }
 
 @end
@@ -104,7 +104,7 @@
         defaultProperties[@"runOnlyForDeploymentPostprocessing"] = @"0";
     });
     
-    return [registry addResourceObjectOfClass:[self class] withProperties:defaultProperties];
+    return [registry addResourceObjectOfClass:[self class] withProperties:[defaultProperties copy]];
 }
 
 - (void)addBuildFileWithReference:(XCFileReference *)reference useAutomaticReferenceCounting:(BOOL)useARC buildSettings:(NSDictionary *)dictionary {
@@ -139,7 +139,7 @@
         defaultProperties[@"runOnlyForDeploymentPostprocessing"] = @"0";
     });
     
-    return [registry addResourceObjectOfClass:[self class] withProperties:defaultProperties];
+    return [registry addResourceObjectOfClass:[self class] withProperties:[defaultProperties copy]];
 }
 
 @end
@@ -241,7 +241,7 @@
         defaultProperties[@"runOnlyForDeploymentPostprocessing"] = @"0";
     });
     
-    return [registry addResourceObjectOfClass:[self class] withProperties:defaultProperties];
+    return [registry addResourceObjectOfClass:[self class] withProperties:[defaultProperties copy]];
 }
 
 - (void)addPublicHeaderFileWithReference:(XCFileReference *)reference buildSettings:(NSDictionary *)dictionary {
