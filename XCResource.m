@@ -17,6 +17,7 @@
         _identifier = identifier;
         _registry = registry;
         _properties = [NSMutableDictionary dictionary];
+        self.resourceDescription = nil;
     }
     
     return self;

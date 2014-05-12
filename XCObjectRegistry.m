@@ -43,7 +43,9 @@
 }
 
 - (XCResource *)objectWithIdentifier:(XCObjectIdentifier *)identifier {
-    return [[XCResource alloc] initWithIdentifier:identifier registry:self];
+    XCResource *resource = [[XCResource alloc] initWithIdentifier:identifier registry:self];
+    if (resource.resourceDescription != nil) identifier.targetDescription = resource.resourceDescription;
+    return resource;
 }
 
 - (id)objectOfClass:(Class)cls withIdentifier:(XCObjectIdentifier *)identifier {

@@ -20,6 +20,9 @@
 - (XCResource *)rootObject;
 - (NSMutableDictionary *)objectDictionary;
 
+// If the XCResource instance returned from this method has its resourceDescription
+// property set to a non-nil value, its value will be propagated to the targetDescription
+// property on the passed-in XCObjectIdentifier.
 - (XCResource *)objectWithIdentifier:(XCObjectIdentifier *)identifier;
 - (id)objectOfClass:(Class)cls withIdentifier:(XCObjectIdentifier *)identifier;
 - (NSDictionary *)propertiesForObjectWithIdentifier:(XCObjectIdentifier *)identifier;
