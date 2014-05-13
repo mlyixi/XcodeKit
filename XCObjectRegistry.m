@@ -9,7 +9,14 @@
 #import "XCObjectRegistry.h"
 #import "XCResource.h"
 
+NSString * const XCInvalidProjectFileException = @"XCInvalidProjectFileException";
+
 @implementation XCObjectRegistry
+
++ (XCObjectRegistry *)objectRegistryWithXcodePBXProjectText:(NSString *)pbxproj {
+    extern XCObjectRegistry * XCParsePBXProjectFile(NSString *pbxprojSource);
+    return XCParsePBXProjectFile(pbxproj);
+}
 
 - (id)init {
     return [self initWithProjectPropertyList:[NSDictionary dictionary]];

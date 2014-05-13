@@ -9,9 +9,12 @@
 #import <Foundation/Foundation.h>
 #import "XCObjectIdentifier.h"
 
+extern NSString * const XCInvalidProjectFileException;
+
 @class XCResource;
 @interface XCObjectRegistry : NSObject
 
++ (XCObjectRegistry *)objectRegistryWithXcodePBXProjectText:(NSString *)pbxproj;
 - (id)initWithProjectPropertyList:(NSDictionary *)propertyList;
 
 @property (readonly, strong) NSMutableDictionary *projectPropertyList;
