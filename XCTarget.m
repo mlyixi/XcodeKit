@@ -83,6 +83,7 @@
 }
 
 - (void)setProductReference:(XCFileReference *)productReference {
+    [self.registry setResourceObject:productReference];
     self.properties[@"productReference"] = productReference.identifier;
 }
 
@@ -97,6 +98,7 @@
 }
 
 - (void)addBuildDependency:(XCTargetDependency *)dependency {
+    [self.registry setResourceObject:dependency];
     [self.properties[@"dependencies"] addObject:dependency.identifier];
 }
 
@@ -124,10 +126,12 @@
 }
 
 - (void)addBuildPhase:(XCBuildPhase *)phase {
+    [self.registry setResourceObject:phase];
     [self.properties[@"buildPhases"] addObject:phase.identifier];
 }
 
 - (void)insertBuildPhase:(XCBuildPhase *)phase atIndex:(NSUInteger)index {
+    [self.registry setResourceObject:phase];
     [self.properties[@"buildPhases"] insertObject:phase.identifier atIndex:index];
 }
 

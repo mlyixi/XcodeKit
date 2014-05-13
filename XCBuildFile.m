@@ -44,6 +44,8 @@
 
 - (void)setFileReference:(XCFileReference *)fileReference {
     XCObjectIdentifier *identifier = [[XCObjectIdentifier alloc] initWithKey:fileReference.identifier.key targetDescription:fileReference.name];
+    
+    [self.registry setResourceObject:fileReference];
     self.properties[@"fileRef"] = identifier;
 }
 
