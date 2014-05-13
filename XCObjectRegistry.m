@@ -80,4 +80,36 @@ NSString * const XCInvalidProjectFileException = @"XCInvalidProjectFileException
     [self.objectDictionary removeObjectForKey:identifier.key];
 }
 
+#pragma mark Removal of Unreferenced Resources
+
+- (void)addObjectIdentifiersInDictionary:(NSDictionary *)dict toSet:(NSMutableSet *)set {
+    for (id object in dict.allValues) {
+        if ([object isKindOfClass:[XCObjectIdentifier class]]) [set addObject:object];
+        else if ([object isKindOfClass:[NSDictionary class]]) [self addObjectIdentifiersInDictionary:object toSet:set];
+        else if ([object isKindOfClass:[NSArray class]]) [self addObjectIdentifiersInArray:object toSet:set];
+    }
+}
+
+- (void)addObjectIdentifiersInArray:(NSArray *)list toSet:(NSMutableSet *)set {
+    for (id object in list) {
+        if ([object isKindOfClass:[XCObjectIdentifier class]]) [set addObject:object];
+        else if ([object isKindOfClass:[NSDictionary class]]) [self addObjectIdentifiersInDictionary:object toSet:set];
+        else if ([object isKindOfClass:[NSArray class]]) [self addObjectIdentifiersInArray:object toSet:set];
+    }
+}
+
+- (void)removeUnreferencedResources {
+    NSMutableSet *set = [NSMutableSet set];
+    [self addObjectIdentifiersInDictionary:self.objectDictionary toSet:set];
+    
+    NSMutableArray *keysToRemove = [NSMutableArray array];
+    for (NSString *key in self.objectDictionary.allKeys) {
+        if (![set containsObject:key]) [keysToRemove addObject:key];
+    }
+    
+    for (NSString *key in keysToRemove) {
+        [self.objectDictionary removeObjectForKey:key];
+    }
+}
+
 @end

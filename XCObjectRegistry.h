@@ -22,6 +22,7 @@ extern NSString * const XCInvalidProjectFileException;
 
 - (XCResource *)rootObject;
 - (NSMutableDictionary *)objectDictionary;
+- (void)removeUnreferencedResources;
 
 // If the XCResource instance returned from this method has its resourceDescription
 // property set to a non-nil value, its value will be propagated to the targetDescription
