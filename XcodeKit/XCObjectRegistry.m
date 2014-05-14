@@ -27,11 +27,47 @@
 
 #import "XCObjectRegistry.h"
 #import "XCResource.h"
-#import "NSString+NSRepeatedString.h"
-#import "NSString+BackslashEscaping.h"
 #import "XCProject.h"
 
+static NSString *XCRepeatedString(NSString *base, NSUInteger times) {
+    if (times == 0) return @"";
+    
+    static NSCache *cache;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        cache = [[NSCache alloc] init];
+        cache.countLimit = 50;
+    });
+    
+    NSString *cacheKey = [NSString stringWithFormat:@"%lu@%@", (unsigned long) times, base];
+    NSString *cacheValue = [cache objectForKey:cacheKey];
+    if (cacheValue != nil) return cacheValue;
+    
+    NSMutableString *repeated = [NSMutableString string];
+    for (NSUInteger i = 0; i < times; i++) [repeated appendString:base];
+    cacheValue = repeated;
+    [cache setObject:cacheValue forKey:cacheKey];
+    
+    return cacheValue;
+}
+
+static NSString *XCQuoteString(NSString *original) {
+    NSMutableString *retval = [original mutableCopy];
+    
+    [retval replaceOccurrencesOfString:@"\\" withString:@"\\\\" options:0 range:NSMakeRange(0, retval.length)];
+    [retval replaceOccurrencesOfString:@"\"" withString:@"\\\"" options:0 range:NSMakeRange(0, retval.length)];
+    [retval replaceOccurrencesOfString:@"\r" withString:@"\\r" options:0 range:NSMakeRange(0, retval.length)];
+    [retval replaceOccurrencesOfString:@"\n" withString:@"\\n" options:0 range:NSMakeRange(0, retval.length)];
+    [retval replaceOccurrencesOfString:@"\t" withString:@"\\t" options:0 range:NSMakeRange(0, retval.length)];
+    [retval replaceOccurrencesOfString:@"\v" withString:@"\\v" options:0 range:NSMakeRange(0, retval.length)];
+    [retval replaceOccurrencesOfString:@"\f" withString:@"\\f" options:0 range:NSMakeRange(0, retval.length)];
+    
+    return retval;
+}
+
 NSString * const XCInvalidProjectFileException = @"XCInvalidProjectFileException";
+
+#pragma mark -
 
 @implementation XCObjectRegistry
 
@@ -170,13 +206,13 @@ NSString * const XCInvalidProjectFileException = @"XCInvalidProjectFileException
         }
     }
     
-    if (needsQuoting) return [NSString stringWithFormat:@"\"%@\"", [base escapedString]];
+    if (needsQuoting) return [NSString stringWithFormat:@"\"%@\"", XCQuoteString(base)];
     else return base;
 }
 
 - (void)generatePBXProjectTextForDictionary:(NSDictionary *)dict inString:(NSMutableString *)string indentLevel:(NSUInteger)tabCount {
-    NSString *indent = [NSString stringWithString:@"\t" repeatedTimes:tabCount];
-    NSString *innerIndent = [NSString stringWithString:@"\t" repeatedTimes:tabCount + 1];
+    NSString *indent = XCRepeatedString(@"\t", tabCount);
+    NSString *innerIndent = XCRepeatedString(@"\t", tabCount + 1);
     
     [string appendString:@"{\n"];
     
@@ -206,8 +242,8 @@ NSString * const XCInvalidProjectFileException = @"XCInvalidProjectFileException
 }
 
 - (void)generatePBXProjectTextForArray:(NSArray *)array inString:(NSMutableString *)string indentLevel:(NSUInteger)tabCount {
-    NSString *indent = [NSString stringWithString:@"\t" repeatedTimes:tabCount];
-    NSString *innerIndent = [NSString stringWithString:@"\t" repeatedTimes:tabCount + 1];
+    NSString *indent = XCRepeatedString(@"\t", tabCount);
+    NSString *innerIndent = XCRepeatedString(@"\t", tabCount + 1);
     
     [string appendString:@"(\n"];
     

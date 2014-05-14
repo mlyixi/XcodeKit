@@ -26,7 +26,43 @@
  */
 
 #import "XCGroup.h"
-#import "NSArray+MapFoldReduce.h"
+
+static NSArray *XCArrayWhere(NSArray *source, BOOL (^block)(id object)) {
+    NSMutableArray *retval = [NSMutableArray array];
+    NSUInteger count = source.count;
+    
+    for (NSUInteger i = 0; i < count; i++) {
+        id object = source[i];
+        if (block(object)) [retval addObject:object];
+    }
+    
+    return retval;
+}
+
+static NSArray *XCArrayReject(NSArray *source, BOOL (^block)(id object)) {
+    NSMutableArray *retval = [NSMutableArray array];
+    NSUInteger count = source.count;
+    
+    for (NSUInteger i = 0; i < count; i++) {
+        id object = source[i];
+        if (!block(object)) [retval addObject:object];
+    }
+    
+    return retval;
+}
+
+static NSArray *XCArrayMap(NSArray *source, id (^block)(id oldValue)) {
+    NSMutableArray *retval = [NSMutableArray array];
+    NSUInteger count = source.count;
+    
+    for (NSUInteger i = 0; i < count; i++) {
+        [retval addObject:block(source[i])];
+    }
+    
+    return retval;
+}
+
+#pragma mark -
 
 @implementation XCGroup
 
@@ -66,21 +102,21 @@
 }
 
 - (NSArray *)childGroups {
-    NSArray *array = [self.children arrayWithObjectsPassingTest:^BOOL(id object) {
+    NSArray *array = XCArrayWhere(self.children, ^BOOL(id object) {
         return [object isKindOfClass:[XCGroup class]];
-    }];
+    });
     
-    return [array arrayByTranslatingValues:^id(id oldValue) {
+    return XCArrayMap(array, ^id(id oldValue) {
         XCGroup *group = oldValue;
         group.parentGroup = self;
         return group;
-    }];
+    });
 }
 
 - (NSArray *)childFiles {
-    return [self.children arrayWithObjectsNotPassingTest:^BOOL(id object) {
+    return XCArrayReject(self.children, ^BOOL(id object) {
         return [object isKindOfClass:[XCGroup class]];
-    }];
+    });
 }
 
 - (void)addChildGroup:(XCGroup *)group {

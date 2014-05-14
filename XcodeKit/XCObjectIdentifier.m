@@ -26,18 +26,18 @@
  */
 
 #import "XCObjectIdentifier.h"
-#import "OnigRegexp.h"
 
 @implementation XCObjectIdentifier
 
 + (BOOL)isValidObjectIdentifierKey:(NSString *)str {
-    static OnigRegexp *regex;
+    static NSRegularExpression *regex;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        regex = [OnigRegexp compile:@"^[0-9A-F]$" ignorecase:YES multiline:NO];
+        regex = [NSRegularExpression regularExpressionWithPattern:@"^[0-9A-F]$" options:NSRegularExpressionCaseInsensitive error:NULL];
+        NSAssert(regex != nil, @"Could not compile regular expression");
     });
     
-    return [regex match:str] != nil;
+    return [regex numberOfMatchesInString:str options:0 range:NSMakeRange(0, str.length)] != 0;
 }
 
 + (NSString *)generateRandomKey {
