@@ -11,7 +11,7 @@
 
 extern NSString * const XCInvalidProjectFileException;
 
-@class XCResource;
+@class XCResource, XCProject, XCGroup;
 @interface XCObjectRegistry : NSObject
 
 // This method returns an XCObjectRegistry instance equipped with an
@@ -20,9 +20,9 @@ extern NSString * const XCInvalidProjectFileException;
 + (XCObjectRegistry *)objectRegistryWithXcodePBXProjectText:(NSString *)pbxproj;
 - (id)initWithProjectPropertyList:(NSDictionary *)propertyList;
 
-@property (readonly, strong) NSMutableDictionary *projectPropertyList;
-@property (strong) XCResource *rootObject;
 @property (assign) NSInteger objectVersion;
+@property (readonly, strong) NSMutableDictionary *projectPropertyList;
+@property (strong) XCProject *project;
 
 - (NSString *)xcodePBXProjectText;
 - (NSMutableDictionary *)objectDictionary;

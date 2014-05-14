@@ -24,8 +24,7 @@ NSString * const XCInvalidProjectFileException = @"XCInvalidProjectFileException
     [registry setResourceObject:mainGroup];
     [registry setResourceObject:project];
     
-    registry.rootObject = project;
-    
+    registry.project = project;
     return registry;
 }
 
@@ -50,6 +49,8 @@ NSString * const XCInvalidProjectFileException = @"XCInvalidProjectFileException
     return self;
 }
 
+#pragma mark Properties
+
 - (NSInteger)objectVersion {
     return [self.projectPropertyList[@"objectVersion"] integerValue];
 }
@@ -58,14 +59,14 @@ NSString * const XCInvalidProjectFileException = @"XCInvalidProjectFileException
     self.projectPropertyList[@"objectVersion"] = @(archiveVersion);
 }
 
-- (XCResource *)rootObject {
+- (XCProject *)project {
     XCObjectIdentifier *identifier = [[XCObjectIdentifier alloc] initWithKey:self.projectPropertyList[@"rootObject"] targetDescription:@"Project object"];
-    return [self objectWithIdentifier:identifier];
+    return (XCProject *) [self objectWithIdentifier:identifier];
 }
 
-- (void)setRootObject:(XCResource *)rootObject {
-    [self setResourceObject:rootObject];
-    self.projectPropertyList[@"rootObject"] = rootObject.identifier;
+- (void)setProject:(XCProject *)project {
+    [self setResourceObject:project];
+    self.projectPropertyList[@"rootObject"] = project.identifier;
 }
 
 - (NSMutableDictionary *)objectDictionary {
