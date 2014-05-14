@@ -14,6 +14,9 @@ extern NSString * const XCInvalidProjectFileException;
 @class XCResource;
 @interface XCObjectRegistry : NSObject
 
+// This method returns an XCObjectRegistry instance equipped with an
+// XCProject instance, a root XCGroup, and an XCConfigurationList instance.
++ (XCObjectRegistry *)objectRegistryForEmptyProjectWithName:(NSString *)projectName;
 + (XCObjectRegistry *)objectRegistryWithXcodePBXProjectText:(NSString *)pbxproj;
 - (id)initWithProjectPropertyList:(NSDictionary *)propertyList;
 

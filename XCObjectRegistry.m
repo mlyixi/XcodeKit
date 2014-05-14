@@ -10,10 +10,24 @@
 #import "XCResource.h"
 #import "NSString+NSRepeatedString.h"
 #import "NSString+BackslashEscaping.h"
+#import "XCProject.h"
 
 NSString * const XCInvalidProjectFileException = @"XCInvalidProjectFileException";
 
 @implementation XCObjectRegistry
+
++ (XCObjectRegistry *)objectRegistryForEmptyProjectWithName:(NSString *)projectName {
+    XCObjectRegistry *registry = [[[self class] alloc] init];
+    
+    XCGroup *mainGroup = [XCGroup createLogicalGroupWithName:projectName inRegistry:registry];
+    XCProject *project = [XCProject createProjectWithMainGroup:mainGroup inRegistry:registry];
+    [registry setResourceObject:mainGroup];
+    [registry setResourceObject:project];
+    
+    registry.rootObject = project;
+    
+    return registry;
+}
 
 + (XCObjectRegistry *)objectRegistryWithXcodePBXProjectText:(NSString *)pbxproj {
     extern XCObjectRegistry * XCParsePBXProjectFile(NSString *pbxprojSource);
