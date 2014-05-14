@@ -162,7 +162,7 @@ static void Node_compile_c_ko(Node *node, int ko)
     case Character:
     case String:
       {
-	int len= strlen(node->string.value);
+	int len= (int) strlen(node->string.value);
 	if (1 == len)
 	  {
 	    if ('\'' == node->string.value[0])
