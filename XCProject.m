@@ -60,7 +60,6 @@
 }
 
 - (void)setConfigurationList:(XCConfigurationList *)configurationList {
-    [self.registry removeResourceObjectWithIdentifier:self.properties[@"buildConfigurationList"]];
     [self.registry setResourceObject:configurationList];
     self.properties[@"buildConfigurationList"] = configurationList.identifier;
 }
@@ -70,7 +69,6 @@
 }
 
 - (void)setMainGroup:(XCGroup *)mainGroup {
-    [self.registry removeResourceObjectWithIdentifier:self.properties[@"mainGroup"]];
     [self.registry setResourceObject:mainGroup];
     self.properties[@"mainGroup"] = mainGroup.identifier;
 }
@@ -80,7 +78,6 @@
 }
 
 - (void)setProductReferenceGroup:(XCGroup *)productReferenceGroup {
-    [self.registry removeResourceObjectWithIdentifier:self.properties[@"productRefGroup"]];
     [self.registry setResourceObject:productReferenceGroup];
     self.properties[@"productRefGroup"] = productReferenceGroup.identifier;
 }

@@ -104,7 +104,6 @@ NSString * const XCFileReferencePathInBuiltProductsDirectory = @"BUILT_PRODUCTS_
 
 - (void)removeFromParentGroup {
     [self.parentGroup removeChild:self];
-    [self.registry removeResourceObjectWithIdentifier:self.identifier];
 }
 
 #pragma mark Properties

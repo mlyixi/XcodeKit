@@ -88,7 +88,6 @@
     }
     
     [self.parentGroup removeChild:self];
-    [self.registry removeResourceObjectWithIdentifier:self.identifier];
 }
 
 @end

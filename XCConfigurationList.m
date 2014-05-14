@@ -56,7 +56,6 @@
     }
     
     [self.properties[@"buildConfigurations"] removeObject:configurationToRemove.identifier];
-    [self.registry removeResourceObjectWithIdentifier:configurationToRemove.identifier];
 }
 
 - (NSString *)defaultConfigurationName {
