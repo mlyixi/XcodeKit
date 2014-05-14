@@ -49,6 +49,11 @@ NSString * const XCInvalidProjectFileException = @"XCInvalidProjectFileException
     return [self objectWithIdentifier:identifier];
 }
 
+- (void)setRootObject:(XCResource *)rootObject {
+    [self setResourceObject:rootObject];
+    self.projectPropertyList[@"rootObject"] = rootObject.identifier;
+}
+
 - (NSMutableDictionary *)objectDictionary {
     return self.projectPropertyList[@"objects"];
 }
