@@ -26,5 +26,6 @@
 @property (strong) XCGroup *mainGroup;
 @property (strong) XCGroup *productReferenceGroup;
 @property (strong) NSMutableArray *targets;
+@property (strong) NSMutableDictionary *attributes;
 
 @end

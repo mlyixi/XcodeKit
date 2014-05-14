@@ -7,6 +7,7 @@
 //
 
 #import "XCProject.h"
+#import "XCTarget.h"
 
 @implementation XCProject
 
@@ -82,6 +83,35 @@
     [self.registry removeResourceObjectWithIdentifier:self.properties[@"productRefGroup"]];
     [self.registry setResourceObject:productReferenceGroup];
     self.properties[@"productRefGroup"] = productReferenceGroup.identifier;
+}
+
+- (NSMutableArray *)targets {
+    NSMutableArray *array = [NSMutableArray array];
+    
+    for (XCObjectIdentifier *ident in self.properties[@"targets"]) {
+        [array addObject:[self.registry objectOfClass:[XCTarget class] withIdentifier:ident]];
+    }
+    
+    return array;
+}
+
+- (void)setTargets:(NSMutableArray *)targets {
+    NSMutableArray *identifiers = [NSMutableArray array];
+    
+    for (XCTarget *target in targets) {
+        [self.registry setResourceObject:target];
+        [identifiers addObject:target.identifier];
+    }
+    
+    self.properties[@"targets"] = identifiers;
+}
+
+- (NSMutableDictionary *)attributes {
+    return self.properties[@"attributes"];
+}
+
+- (void)setAttributes:(NSMutableDictionary *)attributes {
+    self.properties[@"attributes"] = attributes;
 }
 
 @end
