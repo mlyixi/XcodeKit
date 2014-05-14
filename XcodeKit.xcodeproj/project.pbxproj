@@ -364,12 +364,14 @@
 		1FFE18671924249E00A5B42C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				WARNING_CFLAGS = "-Wno-unused-function";
 			};
 			name = Debug;
 		};
 		1FFE18681924249E00A5B42C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				WARNING_CFLAGS = "-Wno-unused-function";
 			};
 			name = Release;
 		};
