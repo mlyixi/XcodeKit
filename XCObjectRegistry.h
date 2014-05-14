@@ -20,6 +20,7 @@ extern NSString * const XCInvalidProjectFileException;
 @property (readonly, strong) NSMutableDictionary *projectPropertyList;
 @property (assign) NSInteger objectVersion;
 
+- (NSString *)xcodePBXProjectText;
 - (XCResource *)rootObject;
 - (NSMutableDictionary *)objectDictionary;
 - (void)removeUnreferencedResources;

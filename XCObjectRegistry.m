@@ -8,6 +8,8 @@
 
 #import "XCObjectRegistry.h"
 #import "XCResource.h"
+#import "NSString+NSRepeatedString.h"
+#import "NSString+BackslashEscaping.h"
 
 NSString * const XCInvalidProjectFileException = @"XCInvalidProjectFileException";
 
@@ -110,6 +112,93 @@ NSString * const XCInvalidProjectFileException = @"XCInvalidProjectFileException
     for (NSString *key in keysToRemove) {
         [self.objectDictionary removeObjectForKey:key];
     }
+}
+
+#pragma mark PBX Project Text Generation
+
+- (NSString *)escapedPBXProjectStringForString:(NSString *)base {
+    NSUInteger length = base.length;
+    NSCharacterSet *cset = [NSCharacterSet characterSetWithCharactersInString:@"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_"];
+    BOOL needsQuoting = NO;
+    
+    for (NSUInteger i = 0; i < length; i++) {
+        unichar c = [base characterAtIndex:i];
+        if (![cset characterIsMember:c]) {
+            needsQuoting = YES;
+            break;
+        }
+    }
+    
+    if (needsQuoting) return [NSString stringWithFormat:@"\"%@\"", [base escapedString]];
+    else return base;
+}
+
+- (void)generatePBXProjectTextForDictionary:(NSDictionary *)dict inString:(NSMutableString *)string indentLevel:(NSUInteger)tabCount {
+    NSString *indent = [NSString stringWithString:@"\t" repeatedTimes:tabCount];
+    NSString *innerIndent = [NSString stringWithString:@"\t" repeatedTimes:tabCount + 1];
+    
+    [string appendString:@"{\n"];
+    
+    for (NSString *key in dict.allKeys) {
+        id value = dict[key];
+        
+        [string appendString:innerIndent];
+        [string appendFormat:@"%@ = ", [self escapedPBXProjectStringForString:key]];
+        
+        if ([value isKindOfClass:[NSString class]]) {
+            [string appendString:[self escapedPBXProjectStringForString:value]];
+        } else if ([value isKindOfClass:[NSNumber class]]) {
+            [string appendString:[self escapedPBXProjectStringForString:[value stringValue]]];
+        } else if ([value isKindOfClass:[NSDictionary class]]) {
+            [self generatePBXProjectTextForDictionary:value inString:string indentLevel:tabCount + 1];
+        } else if ([value isKindOfClass:[NSArray class]]) {
+            [self generatePBXProjectTextForArray:value inString:string indentLevel:tabCount + 1];
+        } else if ([value isKindOfClass:[XCObjectIdentifier class]]) {
+            [string appendString:[value description]];
+        }
+        
+        [string appendString:@";\n"];
+    }
+    
+    [string appendString:indent];
+    [string appendString:@"}"];
+}
+
+- (void)generatePBXProjectTextForArray:(NSArray *)array inString:(NSMutableString *)string indentLevel:(NSUInteger)tabCount {
+    NSString *indent = [NSString stringWithString:@"\t" repeatedTimes:tabCount];
+    NSString *innerIndent = [NSString stringWithString:@"\t" repeatedTimes:tabCount + 1];
+    
+    [string appendString:@"(\n"];
+    
+    for (id value in array) {
+        [string appendString:innerIndent];
+        if ([value isKindOfClass:[NSString class]]) {
+            [string appendString:[self escapedPBXProjectStringForString:value]];
+        } else if ([value isKindOfClass:[NSNumber class]]) {
+            [string appendString:[self escapedPBXProjectStringForString:[value stringValue]]];
+        } else if ([value isKindOfClass:[NSDictionary class]]) {
+            [self generatePBXProjectTextForDictionary:value inString:string indentLevel:tabCount + 1];
+        } else if ([value isKindOfClass:[NSArray class]]) {
+            [self generatePBXProjectTextForArray:value inString:string indentLevel:tabCount + 1];
+        } else if ([value isKindOfClass:[XCObjectIdentifier class]]) {
+            [string appendString:[value description]];
+        }
+        
+        [string appendString:@",\n"];
+    }
+    
+    [string appendString:indent];
+    [string appendString:@")"];
+}
+
+- (NSString *)xcodePBXProjectText {
+    NSMutableString *pbxproj = [NSMutableString string];
+    
+    [pbxproj appendString:@"// !$*UTF8*$!\n"];
+    [self generatePBXProjectTextForDictionary:self.projectPropertyList inString:pbxproj indentLevel:0];
+    [pbxproj appendString:@"\n"];
+    
+    return pbxproj;
 }
 
 @end
