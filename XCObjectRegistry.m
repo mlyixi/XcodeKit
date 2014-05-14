@@ -21,7 +21,9 @@ NSString * const XCInvalidProjectFileException = @"XCInvalidProjectFileException
 }
 
 - (id)init {
-    return [self initWithProjectPropertyList:[NSDictionary dictionary]];
+    NSDictionary *initialPlist = @{ @"formatVersion": @"1", @"classes": [NSDictionary dictionary],
+                                    @"objectVersion": @"46", @"objects": [NSMutableDictionary dictionary] };
+    return [self initWithProjectPropertyList:initialPlist];
 }
 
 - (id)initWithProjectPropertyList:(NSDictionary *)propertyList {
