@@ -28,7 +28,6 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "NSString+BackslashEscaping.h"
 #import "XCObjectIdentifier.h"
 #import "XCObjectRegistry.h"
 #import "XCProject.h"
@@ -37,6 +36,20 @@ static NSString *input = nil;
 static NSUInteger inputIndex = 0, inputLength = 0;
 static NSString * const outputKey = @"com.wjksun.xcodeproject.pbx-parser-output";
 static NSString * const cacheKey = @"com.wjksun.xcodeproject.pbx-parser-cache";
+
+static NSString * XCUnquoteString(NSString *base) {
+    NSMutableString *retval = [base mutableCopy];
+    
+    [retval replaceOccurrencesOfString:@"\\\\" withString:@"\\" options:0 range:NSMakeRange(0, retval.length)];
+    [retval replaceOccurrencesOfString:@"\\\"" withString:@"\"" options:0 range:NSMakeRange(0, retval.length)];
+    [retval replaceOccurrencesOfString:@"\\r" withString:@"\r" options:0 range:NSMakeRange(0, retval.length)];
+    [retval replaceOccurrencesOfString:@"\\n" withString:@"\n" options:0 range:NSMakeRange(0, retval.length)];
+    [retval replaceOccurrencesOfString:@"\\t" withString:@"\t" options:0 range:NSMakeRange(0, retval.length)];
+    [retval replaceOccurrencesOfString:@"\\v" withString:@"\v" options:0 range:NSMakeRange(0, retval.length)];
+    [retval replaceOccurrencesOfString:@"\\f" withString:@"\f" options:0 range:NSMakeRange(0, retval.length)];
+    
+    return retval;
+}
 
 #define YY_INPUT(buf, result, max) \
     do { \
@@ -108,7 +121,7 @@ ArrayContents = existing:ArrayContents - COMMA - obj:Value {
 String = < [a-zA-Z0-9_]+ > {
         $$ = box([NSString stringWithUTF8String:yytext]);
     } |
-    '"' < ( [^"] | '\\\"' )* > '"' { $$ = box([[NSString stringWithUTF8String:yytext] unescapedString]); }
+    '"' < ( [^"] | '\\\"' )* > '"' { $$ = box(XCUnquoteString([NSString stringWithUTF8String:yytext])); }
 
 Value = 'YES' { $$ = box(@YES); }
     | 'NO' { $$ = box(@NO); }
