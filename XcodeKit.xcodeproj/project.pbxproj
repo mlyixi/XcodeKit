@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1F90B7441925608600EE8AAE /* pbxproject.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F90B7431925608600EE8AAE /* pbxproject.m */; };
 		1FFE1873192424C200A5B42C /* leg.1 in Copy Files */ = {isa = PBXBuildFile; fileRef = 1FFE1872192424C200A5B42C /* leg.1 */; };
 		1FFE187C192424CB00A5B42C /* compile.c in Sources */ = {isa = PBXBuildFile; fileRef = 1FFE1877192424CB00A5B42C /* compile.c */; };
 		1FFE187D192424CB00A5B42C /* leg.c in Sources */ = {isa = PBXBuildFile; fileRef = 1FFE1878192424CB00A5B42C /* leg.c */; };
@@ -36,7 +37,6 @@
 		1FFE18DB1924255600A5B42C /* XCStandardProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = 1FFE18C31924255600A5B42C /* XCStandardProperties.m */; };
 		1FFE18DC1924255600A5B42C /* XCTarget.h in Headers */ = {isa = PBXBuildFile; fileRef = 1FFE18C41924255600A5B42C /* XCTarget.h */; };
 		1FFE18DD1924255600A5B42C /* XCTarget.m in Sources */ = {isa = PBXBuildFile; fileRef = 1FFE18C51924255600A5B42C /* XCTarget.m */; };
-		1FFE18E0192425BE00A5B42C /* pbxproject.peg in Sources */ = {isa = PBXBuildFile; fileRef = 1FFE18AD1924255600A5B42C /* pbxproject.peg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -78,6 +78,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1F90B7431925608600EE8AAE /* pbxproject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = pbxproject.m; sourceTree = "<group>"; };
 		1FFE186D192424C200A5B42C /* leg */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = leg; sourceTree = BUILT_PRODUCTS_DIR; };
 		1FFE1872192424C200A5B42C /* leg.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = leg.1; sourceTree = "<group>"; };
 		1FFE1877192424CB00A5B42C /* compile.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = compile.c; sourceTree = "<group>"; };
@@ -193,6 +194,7 @@
 			isa = PBXGroup;
 			children = (
 				1FFE18AD1924255600A5B42C /* pbxproject.peg */,
+				1F90B7431925608600EE8AAE /* pbxproject.m */,
 				1FFE18BA1924255600A5B42C /* XCObjectIdentifier.h */,
 				1FFE18BB1924255600A5B42C /* XCObjectIdentifier.m */,
 				1FFE18BC1924255600A5B42C /* XCObjectRegistry.h */,
@@ -334,6 +336,7 @@
 			files = (
 				1FFE18D51924255600A5B42C /* XCObjectRegistry.m in Sources */,
 				1FFE18C71924255600A5B42C /* XCBuildFile.m in Sources */,
+				1F90B7441925608600EE8AAE /* pbxproject.m in Sources */,
 				1FFE18CB1924255600A5B42C /* XCConfiguration.m in Sources */,
 				1FFE18D11924255600A5B42C /* XCGroup.m in Sources */,
 				1FFE18D31924255600A5B42C /* XCObjectIdentifier.m in Sources */,
@@ -344,7 +347,6 @@
 				1FFE18CD1924255600A5B42C /* XCConfigurationList.m in Sources */,
 				1FFE18D91924255600A5B42C /* XCResource.m in Sources */,
 				1FFE18D71924255600A5B42C /* XCProject.m in Sources */,
-				1FFE18E0192425BE00A5B42C /* pbxproject.peg in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
