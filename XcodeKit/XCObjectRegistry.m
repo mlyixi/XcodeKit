@@ -98,30 +98,29 @@ NSString * const XCInvalidProjectFileException = @"XCInvalidProjectFileException
 #define CheckScan(expr, desc) \
     do { \
         BOOL ok = expr; \
-        if (!ok) [NSException raise:XCInvalidProjectFileException format:@"Scan expression '%s' (%@) failed", #expr, desc]; \
+        if (!ok) [NSException raise:XCInvalidProjectFileException format:@"Scan expression '%s' (%@) failed at location %ld", #expr, desc, (long) scanner.scanLocation]; \
     } while (0)
 
 + (NSString *)scanPBXProjectStringFrom:(NSScanner *)scanner {
     if (XCScannerPeek(scanner, @"\"")) {
         CheckScan([scanner scanString:@"\"" intoString:NULL], @"Eat opening quoted string delimiter");
-        
         NSMutableString *value = [NSMutableString string];
         
         BOOL stop = NO;
         while (!stop) {
-            NSString *part;
-            CheckScan([scanner scanUpToString:@"\"" intoString:&part], @"Find quoted string delimiter");
+            NSString *part = @"";
+            [scanner scanUpToString:@"\"" intoString:&part];
             [value appendString:part];
             
-            if ([part characterAtIndex:part.length - 1] == '\\') {
-                CheckScan([scanner scanString:@"\"" intoString:&part], @"Scan escaped quote");
+            if ([part hasSuffix:@"\\"] && XCScannerPeek(scanner, @"\"")) {
+                [scanner scanString:@"\"" intoString:&part];
                 [value appendString:part];
             } else {
-                stop = NO;
+                CheckScan([scanner scanString:@"\"" intoString:NULL], @"Eat closing quoted string delimiter");
+                stop = YES;
             }
         }
         
-        CheckScan([scanner scanString:@"\"" intoString:NULL], @"Eat closing quoted string delimiter");
         return XCUnquoteString(value);
     }
     
@@ -137,12 +136,17 @@ NSString * const XCInvalidProjectFileException = @"XCInvalidProjectFileException
     
     [scanner scanCharactersFromSet:wspace intoString:NULL];
     CheckScan([scanner scanString:@"{" intoString:NULL], @"Eat opening brace for dictionary");
+    [scanner scanCharactersFromSet:wspace intoString:NULL];
     
-    while (![scanner scanString:@"}" intoString:NULL]) {
-        if (XCScannerPeek(scanner, @"/*")) {
+    while (!XCScannerPeek(scanner, @"}")) {
+        [scanner scanCharactersFromSet:wspace intoString:NULL];
+        
+        while (XCScannerPeek(scanner, @"/*")) {
             CheckScan([scanner scanString:@"/*" intoString:NULL], @"Eat opening comment delimiter for ignored comment in dictionary");
             CheckScan([scanner scanUpToString:@"*/" intoString:NULL], @"Find closing comment delimiter for ignored comment in dictionary");
             CheckScan([scanner scanString:@"*/" intoString:NULL], @"Eat closing comment delimiter for ignored comment in dictionary");
+            
+            [scanner scanCharactersFromSet:wspace intoString:NULL];
         }
         
         [scanner scanCharactersFromSet:wspace intoString:NULL];
@@ -162,6 +166,10 @@ NSString * const XCInvalidProjectFileException = @"XCInvalidProjectFileException
             [scanner scanCharactersFromSet:wspace intoString:NULL];
         }
         
+        [scanner scanCharactersFromSet:wspace intoString:NULL];
+        CheckScan([scanner scanString:@"=" intoString:NULL], @"Eat equals sign in dictionary key/value pair");
+        [scanner scanCharactersFromSet:wspace intoString:NULL];
+        
         id value = [self scanPBXProjectValueFrom:scanner];
         parsedDictionary[key] = value;
         
@@ -172,6 +180,16 @@ NSString * const XCInvalidProjectFileException = @"XCInvalidProjectFileException
         
         [scanner scanCharactersFromSet:wspace intoString:NULL];
         CheckScan([scanner scanString:@";" intoString:NULL], @"Eat semicolon following dictionary key/value pair");
+        [scanner scanCharactersFromSet:wspace intoString:NULL];
+        
+        while (XCScannerPeek(scanner, @"/*")) {
+            CheckScan([scanner scanString:@"/*" intoString:NULL], @"Eat opening comment delimiter for ignored comment in dictionary");
+            CheckScan([scanner scanUpToString:@"*/" intoString:NULL], @"Find closing comment delimiter for ignored comment in dictionary");
+            CheckScan([scanner scanString:@"*/" intoString:NULL], @"Eat closing comment delimiter for ignored comment in dictionary");
+            
+            [scanner scanCharactersFromSet:wspace intoString:NULL];
+        }
+        
         [scanner scanCharactersFromSet:wspace intoString:NULL];
     }
     
@@ -187,9 +205,10 @@ NSString * const XCInvalidProjectFileException = @"XCInvalidProjectFileException
     
     [scanner scanCharactersFromSet:wspace intoString:NULL];
     CheckScan([scanner scanString:@"(" intoString:NULL], @"Eat opening parenthesis for array");
+    [scanner scanCharactersFromSet:wspace intoString:NULL];
     
-    while (![scanner scanString:@")" intoString:NULL]) {
-        if (XCScannerPeek(scanner, @"/*")) {
+    while (!XCScannerPeek(scanner, @")")) {
+        while (XCScannerPeek(scanner, @"/*")) {
             CheckScan([scanner scanString:@"/*" intoString:NULL], @"Eat opening comment delimiter for ignored comment in array");
             CheckScan([scanner scanUpToString:@"*/" intoString:NULL], @"Find closing comment delimiter for ignored comment in array");
             CheckScan([scanner scanString:@"*/" intoString:NULL], @"Eat closing comment delimiter for ignored comment in array");
@@ -214,6 +233,18 @@ NSString * const XCInvalidProjectFileException = @"XCInvalidProjectFileException
             
             scanner.scanLocation = savedLocation;
         }
+        
+        [scanner scanCharactersFromSet:wspace intoString:NULL];
+        
+        while (XCScannerPeek(scanner, @"/*")) {
+            CheckScan([scanner scanString:@"/*" intoString:NULL], @"Eat opening comment delimiter for ignored comment in array");
+            CheckScan([scanner scanUpToString:@"*/" intoString:NULL], @"Find closing comment delimiter for ignored comment in array");
+            CheckScan([scanner scanString:@"*/" intoString:NULL], @"Eat closing comment delimiter for ignored comment in array");
+            
+            [scanner scanCharactersFromSet:wspace intoString:NULL];
+        }
+        
+        [scanner scanCharactersFromSet:wspace intoString:NULL];
     }
     
     [scanner scanCharactersFromSet:wspace intoString:NULL];
