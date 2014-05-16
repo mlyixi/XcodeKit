@@ -33,7 +33,7 @@
     static NSRegularExpression *regex;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        regex = [NSRegularExpression regularExpressionWithPattern:@"^[0-9A-F]$" options:NSRegularExpressionCaseInsensitive error:NULL];
+        regex = [NSRegularExpression regularExpressionWithPattern:@"^[0-9A-F]{24}$" options:NSRegularExpressionCaseInsensitive error:NULL];
         NSAssert(regex != nil, @"Could not compile regular expression");
     });
     
