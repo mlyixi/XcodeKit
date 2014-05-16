@@ -263,6 +263,8 @@ NSString * const XCInvalidProjectFileException = @"XCInvalidProjectFileException
 
 + (XCObjectRegistry *)objectRegistryWithXcodePBXProjectText:(NSString *)pbxproj {
     NSScanner *scanner = [NSScanner scannerWithString:pbxproj];
+    scanner.charactersToBeSkipped = [NSCharacterSet characterSetWithRange:NSMakeRange(0, 0)];
+    
     NSCharacterSet * const newlines = [NSCharacterSet newlineCharacterSet];
     
     // Eat the opening comment (if any).
