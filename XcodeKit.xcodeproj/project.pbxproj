@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1F90B7441925608600EE8AAE /* pbxproject.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F90B7431925608600EE8AAE /* pbxproject.m */; };
 		1FFE1873192424C200A5B42C /* leg.1 in Copy Files */ = {isa = PBXBuildFile; fileRef = 1FFE1872192424C200A5B42C /* leg.1 */; };
 		1FFE187C192424CB00A5B42C /* compile.c in Sources */ = {isa = PBXBuildFile; fileRef = 1FFE1877192424CB00A5B42C /* compile.c */; };
 		1FFE187D192424CB00A5B42C /* leg.c in Sources */ = {isa = PBXBuildFile; fileRef = 1FFE1878192424CB00A5B42C /* leg.c */; };
@@ -78,7 +77,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		1F90B7431925608600EE8AAE /* pbxproject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = pbxproject.m; sourceTree = "<group>"; };
 		1FFE186D192424C200A5B42C /* leg */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = leg; sourceTree = BUILT_PRODUCTS_DIR; };
 		1FFE1872192424C200A5B42C /* leg.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = leg.1; sourceTree = "<group>"; };
 		1FFE1877192424CB00A5B42C /* compile.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = compile.c; sourceTree = "<group>"; };
@@ -92,7 +90,6 @@
 		1FFE18891924253100A5B42C /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		1FFE188A1924253100A5B42C /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		1FFE18961924253100A5B42C /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
-		1FFE18AD1924255600A5B42C /* pbxproject.peg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = pbxproject.peg; sourceTree = "<group>"; };
 		1FFE18AE1924255600A5B42C /* XCBuildFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XCBuildFile.h; sourceTree = "<group>"; };
 		1FFE18AF1924255600A5B42C /* XCBuildFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XCBuildFile.m; sourceTree = "<group>"; };
 		1FFE18B01924255600A5B42C /* XCBuildPhase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XCBuildPhase.h; sourceTree = "<group>"; };
@@ -193,8 +190,6 @@
 		1FFE188B1924253100A5B42C /* XcodeKit */ = {
 			isa = PBXGroup;
 			children = (
-				1FFE18AD1924255600A5B42C /* pbxproject.peg */,
-				1F90B7431925608600EE8AAE /* pbxproject.m */,
 				1FFE18BA1924255600A5B42C /* XCObjectIdentifier.h */,
 				1FFE18BB1924255600A5B42C /* XCObjectIdentifier.m */,
 				1FFE18BC1924255600A5B42C /* XCObjectRegistry.h */,
@@ -336,7 +331,6 @@
 			files = (
 				1FFE18D51924255600A5B42C /* XCObjectRegistry.m in Sources */,
 				1FFE18C71924255600A5B42C /* XCBuildFile.m in Sources */,
-				1F90B7441925608600EE8AAE /* pbxproject.m in Sources */,
 				1FFE18CB1924255600A5B42C /* XCConfiguration.m in Sources */,
 				1FFE18D11924255600A5B42C /* XCGroup.m in Sources */,
 				1FFE18D31924255600A5B42C /* XCObjectIdentifier.m in Sources */,
