@@ -29,8 +29,14 @@ int main(int argc, const char * argv[])
             }
             
             printf("// %s\n", argv[i]);
-            XCObjectRegistry *registry = [XCObjectRegistry objectRegistryWithXcodePBXProjectText:text];
-            printf("%s\n", registry.projectPropertyList.description.UTF8String);
+            
+            @try {
+                XCObjectRegistry *registry = [XCObjectRegistry objectRegistryWithXcodePBXProjectText:text];
+                printf("%s\n", registry.projectPropertyList.description.UTF8String);
+            } @catch (NSException *exception) {
+                fprintf(stderr, "Could not parse pbxproj: %s\n", exception.description.UTF8String);
+                fprintf(stderr, "%s\n", exception.callStackSymbols.description.UTF8String);
+            }
         }
     }
     
