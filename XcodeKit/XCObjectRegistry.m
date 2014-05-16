@@ -65,6 +65,30 @@ static NSString *XCQuoteString(NSString *original) {
     return retval;
 }
 
+static NSString * XCUnquoteString(NSString *base) {
+    NSMutableString *retval = [base mutableCopy];
+    
+    [retval replaceOccurrencesOfString:@"\\\\" withString:@"\\" options:0 range:NSMakeRange(0, retval.length)];
+    [retval replaceOccurrencesOfString:@"\\\"" withString:@"\"" options:0 range:NSMakeRange(0, retval.length)];
+    [retval replaceOccurrencesOfString:@"\\r" withString:@"\r" options:0 range:NSMakeRange(0, retval.length)];
+    [retval replaceOccurrencesOfString:@"\\n" withString:@"\n" options:0 range:NSMakeRange(0, retval.length)];
+    [retval replaceOccurrencesOfString:@"\\t" withString:@"\t" options:0 range:NSMakeRange(0, retval.length)];
+    [retval replaceOccurrencesOfString:@"\\v" withString:@"\v" options:0 range:NSMakeRange(0, retval.length)];
+    [retval replaceOccurrencesOfString:@"\\f" withString:@"\f" options:0 range:NSMakeRange(0, retval.length)];
+    
+    return retval;
+}
+
+static BOOL XCScannerPeek(NSScanner *scanner, NSString *stringToPeek) {
+    NSInteger savedLocation = scanner.scanLocation;
+    
+    @try {
+        return [scanner scanString:stringToPeek intoString:NULL];
+    } @finally {
+        scanner.scanLocation = savedLocation;
+    }
+}
+
 NSString * const XCInvalidProjectFileException = @"XCInvalidProjectFileException";
 
 #pragma mark -
@@ -83,10 +107,189 @@ NSString * const XCInvalidProjectFileException = @"XCInvalidProjectFileException
     return registry;
 }
 
-+ (XCObjectRegistry *)objectRegistryWithXcodePBXProjectText:(NSString *)pbxproj {
-    extern XCObjectRegistry * XCParsePBXProjectFile(NSString *pbxprojSource);
-    return XCParsePBXProjectFile(pbxproj);
+#pragma mark PBX Project Text Parsing
+
+#define CheckScan(expr, desc) \
+do { \
+BOOL ok = expr; \
+if (!ok) [NSException raise:XCInvalidProjectFileException format:@"Scan expression '%s' (%@) failed", #expr, desc]; \
+} while (0)
+
++ (NSString *)scanPBXProjectStringFrom:(NSScanner *)scanner {
+    if (XCScannerPeek(scanner, @"\"")) {
+        CheckScan([scanner scanString:@"\"" intoString:NULL], @"Eat opening quoted string delimiter");
+        
+        NSMutableString *value = [NSMutableString string];
+        
+        BOOL stop = NO;
+        while (!stop) {
+            NSString *part;
+            CheckScan([scanner scanUpToString:@"\"" intoString:&part], @"Find quoted string delimiter");
+            [value appendString:part];
+            
+            if ([part characterAtIndex:part.length - 1] == '\\') {
+                CheckScan([scanner scanString:@"\"" intoString:&part], @"Scan escaped quote");
+                [value appendString:part];
+            } else {
+                stop = NO;
+            }
+        }
+        
+        CheckScan([scanner scanString:@"\"" intoString:NULL], @"Eat closing quoted string delimiter");
+        return XCUnquoteString(value);
+    }
+    
+    NSCharacterSet *charset = [NSCharacterSet characterSetWithCharactersInString:@"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789._/"];
+    NSString *retval;
+    CheckScan([scanner scanCharactersFromSet:charset intoString:&retval], @"Scan unquoted string");
+    return retval;
 }
+
++ (NSDictionary *)scanPBXProjectDictionaryFrom:(NSScanner *)scanner {
+    NSCharacterSet * const wspace = [NSCharacterSet whitespaceAndNewlineCharacterSet];
+    NSMutableDictionary *parsedDictionary = [NSMutableDictionary dictionary];
+    
+    [scanner scanCharactersFromSet:wspace intoString:NULL];
+    CheckScan([scanner scanString:@"{" intoString:NULL], @"Eat opening brace for dictionary");
+    
+    while (![scanner scanString:@"}" intoString:NULL]) {
+        if (XCScannerPeek(scanner, @"/*")) {
+            CheckScan([scanner scanString:@"/*" intoString:NULL], @"Eat opening comment delimiter for ignored comment in dictionary");
+            CheckScan([scanner scanUpToString:@"*/" intoString:NULL], @"Find closing comment delimiter for ignored comment in dictionary");
+            CheckScan([scanner scanString:@"*/" intoString:NULL], @"Eat closing comment delimiter for ignored comment in dictionary");
+        }
+        
+        [scanner scanCharactersFromSet:wspace intoString:NULL];
+        NSString *key = [self scanPBXProjectStringFrom:scanner];
+        [scanner scanCharactersFromSet:wspace intoString:NULL];
+        
+        NSString *objectComment = nil;
+        if (XCScannerPeek(scanner, @"/*")) {
+            CheckScan([scanner scanString:@"/*" intoString:NULL], @"Eat opening comment delimiter for annotated XCObjectIdentifier dictionary key");
+            [scanner scanCharactersFromSet:wspace intoString:NULL];
+            
+            CheckScan([scanner scanUpToString:@"*/" intoString:&objectComment], @"Scan annotated XCObjectIdentifier dictionary key comment value");
+            objectComment = [objectComment stringByTrimmingCharactersInSet:wspace];
+            
+            [scanner scanCharactersFromSet:wspace intoString:NULL];
+            CheckScan([scanner scanString:@"*/" intoString:NULL], @"Eat closing comment delimiter for annotated XCObjectIdentifier dictionary key");
+            [scanner scanCharactersFromSet:wspace intoString:NULL];
+        }
+        
+        id value = [self scanPBXProjectValueFrom:scanner];
+        parsedDictionary[key] = value;
+        
+        if (objectComment != nil && [value isKindOfClass:[XCResource class]]) {
+            XCResource *res = value;
+            res.resourceDescription = objectComment;
+        }
+        
+        [scanner scanCharactersFromSet:wspace intoString:NULL];
+        CheckScan([scanner scanString:@";" intoString:NULL], @"Eat semicolon following dictionary key/value pair");
+        [scanner scanCharactersFromSet:wspace intoString:NULL];
+    }
+    
+    [scanner scanCharactersFromSet:wspace intoString:NULL];
+    CheckScan([scanner scanString:@"}" intoString:NULL], @"Eat closing brace for dictionary");
+    
+    return parsedDictionary;
+}
+
++ (NSArray *)scanPBXProjectArrayFrom:(NSScanner *)scanner {
+    NSCharacterSet * const wspace = [NSCharacterSet whitespaceAndNewlineCharacterSet];
+    NSMutableArray *parsedArray = [NSMutableArray array];
+    
+    [scanner scanCharactersFromSet:wspace intoString:NULL];
+    CheckScan([scanner scanString:@"(" intoString:NULL], @"Eat opening parenthesis for array");
+    
+    while (![scanner scanString:@")" intoString:NULL]) {
+        if (XCScannerPeek(scanner, @"/*")) {
+            CheckScan([scanner scanString:@"/*" intoString:NULL], @"Eat opening comment delimiter for ignored comment in array");
+            CheckScan([scanner scanUpToString:@"*/" intoString:NULL], @"Find closing comment delimiter for ignored comment in array");
+            CheckScan([scanner scanString:@"*/" intoString:NULL], @"Eat closing comment delimiter for ignored comment in array");
+        }
+        
+        [scanner scanCharactersFromSet:wspace intoString:NULL];
+        id value = [self scanPBXProjectValueFrom:scanner];
+        [parsedArray addObject:value];
+        
+        [scanner scanCharactersFromSet:wspace intoString:NULL];
+        
+        BOOL seenComma = [scanner scanString:@"," intoString:NULL];
+        
+        // The trailing comma can only be omitted if this is the last element in the array.
+        if (!seenComma) {
+            NSInteger savedLocation = scanner.scanLocation;
+            [scanner scanCharactersFromSet:wspace intoString:NULL];
+            
+            if (![scanner scanString:@")" intoString:NULL]) {
+                [NSException raise:XCInvalidProjectFileException format:@"Value in array must be followed by a comma"];
+            }
+            
+            scanner.scanLocation = savedLocation;
+        }
+    }
+    
+    [scanner scanCharactersFromSet:wspace intoString:NULL];
+    CheckScan([scanner scanString:@")" intoString:NULL], @"Eat closing parenthesis for array");
+    return parsedArray;
+}
+
++ (XCObjectIdentifier *)scanPBXProjectObjectIdentifierFrom:(NSScanner *)scanner {
+    NSCharacterSet * const wspace = [NSCharacterSet whitespaceAndNewlineCharacterSet];
+    NSString *string = [self scanPBXProjectStringFrom:scanner];
+    NSString *objectComment = nil;
+    
+    [scanner scanCharactersFromSet:wspace intoString:NULL];
+    if (XCScannerPeek(scanner, @"/*")) {
+        CheckScan([scanner scanString:@"/*" intoString:NULL], @"Eat opening comment delimiter for annotated XCObjectIdentifier dictionary key");
+        [scanner scanCharactersFromSet:wspace intoString:NULL];
+        
+        CheckScan([scanner scanUpToString:@"*/" intoString:&objectComment], @"Scan annotated XCObjectIdentifier dictionary key comment value");
+        objectComment = [objectComment stringByTrimmingCharactersInSet:wspace];
+        
+        [scanner scanCharactersFromSet:wspace intoString:NULL];
+        CheckScan([scanner scanString:@"*/" intoString:NULL], @"Eat closing comment delimiter for annotated XCObjectIdentifier dictionary key");
+        [scanner scanCharactersFromSet:wspace intoString:NULL];
+    }
+    
+    return [[XCObjectIdentifier alloc] initWithKey:string targetDescription:objectComment];
+}
+
++ (id)scanPBXProjectValueFrom:(NSScanner *)scanner {
+    if (XCScannerPeek(scanner, @"\"")) {
+        return [self scanPBXProjectStringFrom:scanner];
+    } else if (XCScannerPeek(scanner, @"(")) {
+        return [self scanPBXProjectArrayFrom:scanner];
+    } else if (XCScannerPeek(scanner, @"{")) {
+        return [self scanPBXProjectDictionaryFrom:scanner];
+    } else {
+        NSInteger savedLocation = scanner.scanLocation;
+        NSString *possibleKey = [self scanPBXProjectStringFrom:scanner];
+        if ([XCObjectIdentifier isValidObjectIdentifierKey:possibleKey]) {
+            scanner.scanLocation = savedLocation;
+            return [self scanPBXProjectObjectIdentifierFrom:scanner];
+        } else {
+            return possibleKey;
+        }
+    }
+}
+
++ (XCObjectRegistry *)objectRegistryWithXcodePBXProjectText:(NSString *)pbxproj {
+    NSScanner *scanner = [NSScanner scannerWithString:pbxproj];
+    NSCharacterSet * const newlines = [NSCharacterSet newlineCharacterSet];
+    
+    // Eat the opening comment (if any).
+    if ([scanner scanString:@"//" intoString:NULL]) {
+        CheckScan([scanner scanUpToCharactersFromSet:newlines intoString:NULL], @"Eat opening comment");
+        CheckScan([scanner scanCharactersFromSet:newlines intoString:NULL], @"Eat opening comment trailing newline");
+    }
+    
+    NSDictionary *dict = [self scanPBXProjectDictionaryFrom:scanner];
+    return [[XCObjectRegistry alloc] initWithProjectPropertyList:dict];
+}
+
+#pragma mark Constructors
 
 - (id)init {
     NSDictionary *initialPlist = @{ @"formatVersion": @"1", @"classes": [NSDictionary dictionary],
