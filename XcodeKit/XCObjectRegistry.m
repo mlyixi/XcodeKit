@@ -95,25 +95,11 @@ NSString * const XCInvalidProjectFileException = @"XCInvalidProjectFileException
 
 @implementation XCObjectRegistry
 
-+ (XCObjectRegistry *)objectRegistryForEmptyProjectWithName:(NSString *)projectName {
-    XCObjectRegistry *registry = [[[self class] alloc] init];
-    
-    XCGroup *mainGroup = [XCGroup createLogicalGroupWithName:projectName inRegistry:registry];
-    XCProject *project = [XCProject createProjectWithMainGroup:mainGroup inRegistry:registry];
-    [registry setResourceObject:mainGroup];
-    [registry setResourceObject:project];
-    
-    registry.project = project;
-    return registry;
-}
-
-#pragma mark PBX Project Text Parsing
-
 #define CheckScan(expr, desc) \
-do { \
-BOOL ok = expr; \
-if (!ok) [NSException raise:XCInvalidProjectFileException format:@"Scan expression '%s' (%@) failed", #expr, desc]; \
-} while (0)
+    do { \
+        BOOL ok = expr; \
+        if (!ok) [NSException raise:XCInvalidProjectFileException format:@"Scan expression '%s' (%@) failed", #expr, desc]; \
+    } while (0)
 
 + (NSString *)scanPBXProjectStringFrom:(NSScanner *)scanner {
     if (XCScannerPeek(scanner, @"\"")) {
@@ -290,6 +276,18 @@ if (!ok) [NSException raise:XCInvalidProjectFileException format:@"Scan expressi
 }
 
 #pragma mark Constructors
+
++ (XCObjectRegistry *)objectRegistryForEmptyProjectWithName:(NSString *)projectName {
+    XCObjectRegistry *registry = [[[self class] alloc] init];
+    
+    XCGroup *mainGroup = [XCGroup createLogicalGroupWithName:projectName inRegistry:registry];
+    XCProject *project = [XCProject createProjectWithMainGroup:mainGroup inRegistry:registry];
+    [registry setResourceObject:mainGroup];
+    [registry setResourceObject:project];
+    
+    registry.project = project;
+    return registry;
+}
 
 - (id)init {
     NSDictionary *initialPlist = @{ @"formatVersion": @"1", @"classes": [NSDictionary dictionary],
