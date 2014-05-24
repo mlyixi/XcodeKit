@@ -71,7 +71,9 @@
         newIdentifier = [[self class] generateRandomKey];
         
         iterationCount++;
-        NSAssert(iterationCount <= maxIterations, @"Could not generate a unique XCObjectIdentifier key after %ld attempts", (long)maxIterations);
+        if (iterationCount <= maxIterations) {
+            [NSException raise:NSInternalInconsistencyException format:@"Could not generate a unique XCObjectIdentifier key after %ld attempts", (long)maxIterations];
+        }
     }
     
     return [self initWithKey:newIdentifier targetDescription:targetDescription];
