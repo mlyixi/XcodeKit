@@ -16,6 +16,8 @@ int main(int argc, const char * argv[])
         
         @try {
             XCObjectRegistry *registry = [XCObjectRegistry objectRegistryWithXcodeProject:filePath];
+            
+            // modify the buildSetting
             for (XCTarget *target in registry.project.targets) {
                 for (XCConfiguration *config in target.configurationList.configurations) {
                     NSDictionary *dict=[NSDictionary dictionaryWithObject:@"" forKey:XCConfigurationPropertyCodeSignIdentity];
@@ -28,6 +30,16 @@ int main(int argc, const char * argv[])
             for (XCTarget *target in registry.project.targets) {
                 [target addBuildPhase:rsb];
                 [registry setResourceObject:target];
+            }
+            
+            [registry save];
+            
+            for (XCTarget *target in registry.project.targets) {
+                for (XCBuildPhase *bp in target.buildPhases) {
+                    if ([bp.type isEqualToString: @"PBXShellScriptBuildPhase"]) {
+                        [target removeBuildPhase:bp];
+                    } 
+                }
             }
             
             [registry save];

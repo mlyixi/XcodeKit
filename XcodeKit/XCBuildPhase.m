@@ -29,6 +29,14 @@
 
 @implementation XCBuildPhase
 
+#pragma mark properties
+-(NSString *)type {
+    return self.properties[@"isa"];
+}
+
+-(NSString *)buildActionMask {
+    return self.properties[@"buildActionMask"];
+}
 - (XCBuildFile *)buildFileWithName:(NSString *)name {
     for (NSString *key in self.properties[@"files"]) {
         XCBuildFile *file = [self.registry objectOfClass:[XCBuildFile class] withKey:key];
@@ -187,14 +195,6 @@
     
     NSMutableDictionary *finalProperties = [defaultProperties copy];
     return [registry addResourceObjectOfClass:[self class] withProperties:finalProperties];
-}
-
-- (NSString *)name {
-    return self.properties[@"name"];
-}
-
-- (void)setName:(NSString *)name {
-    self.properties[@"name"] = name;
 }
 
 - (BOOL)runOnlyWhenInstalling {

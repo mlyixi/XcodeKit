@@ -54,6 +54,10 @@
 /// abstract XCBuildPhase
 @interface XCBuildPhase : XCResource
 
+/// @properties
+@property (readonly,strong) NSString *type;
+@property (readonly,strong) NSString *buildActionMask;
+
 - (XCBuildFile *)buildFileWithName:(NSString *)name;
 - (XCBuildFile *)buildFileWithPath:(NSString *)path;
 - (XCFileReference *)buildFileReferenceWithName:(NSString *)name;
@@ -109,7 +113,6 @@
 @property (assign) BOOL runOnlyWhenInstalling;
 @property (strong) NSString *scriptSource;
 @property (strong) NSString *interpreterPath;
-@property (strong) NSString *name;
 
 // These two arrays contain NSStrings: the paths to the files to be used, possibly containing Xcode $(variables).
 @property (strong) NSArray *inputFiles;

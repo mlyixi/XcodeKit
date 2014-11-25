@@ -149,6 +149,7 @@
 
 - (void)removeBuildPhase:(XCBuildPhase *)phase {
     [self.properties[@"buildPhases"] removeObject:phase.identifier.key];
+    [self.registry removeResourceObjectWithIdentifier:phase.identifier];
 }
 
 @end
