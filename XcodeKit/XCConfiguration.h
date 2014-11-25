@@ -32,11 +32,10 @@ extern NSString * const XCConfigurationNameRelease;
 
 @interface XCConfiguration : XCResource
 
-// Note that this method doesn't add any values to the instance's buildSettings property.
+/// create XCConfiguration
 + (XCConfiguration *)createConfigurationWithName:(NSString *)name inRegistry:(XCObjectRegistry *)registry;
 
-#pragma mark Properties
-
+/// @Properties
 @property (strong) NSString *name;
 @property (readonly, strong) NSMutableDictionary *buildSettings;
 

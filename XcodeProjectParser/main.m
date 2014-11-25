@@ -7,36 +7,33 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "XCObjectRegistry.h"
-
-static void usage(void) {
-    fprintf(stderr, "usage: %s project.pbxproj\n", getprogname());
-    fprintf(stderr, "Parses and prints the contents of each named pbxproj file\n");
-    exit(1);
-}
+#import "XcodeKit.h"
 
 int main(int argc, const char * argv[])
 {
     @autoreleasepool {
-        for (int i = 1; i < argc; i++) {
-            if (strcmp(argv[i], "--help") == 0) usage();
-            
-            NSError *error;
-            NSString *text = [NSString stringWithContentsOfFile:[NSString stringWithUTF8String:argv[i]] encoding:NSUTF8StringEncoding error:&error];
-            if (text == nil) {
-                fprintf(stderr, "Could not read '%s': %s\n", argv[i], error.description.UTF8String);
-                continue;
+        NSString *filePath = @"/Users/mlyixi/Documents/Test/Test.xcodeproj";
+        
+        @try {
+            XCObjectRegistry *registry = [XCObjectRegistry objectRegistryWithXcodeProject:filePath];
+            for (XCTarget *target in registry.project.targets) {
+                for (XCConfiguration *config in target.configurationList.configurations) {
+                    NSDictionary *dict=[NSDictionary dictionaryWithObject:@"" forKey:XCConfigurationPropertyCodeSignIdentity];
+                    [config.buildSettings addEntriesFromDictionary:dict];
+                    [registry setResourceObject:config];
+                }
+                
+            }
+            XCRunScriptBuildPhase *rsb=[XCRunScriptBuildPhase createRunScriptBuildPhaseWithScript:@"echo hello" inRegistry:registry];
+            for (XCTarget *target in registry.project.targets) {
+                [target addBuildPhase:rsb];
+                [registry setResourceObject:target];
             }
             
-            printf("// %s\n", argv[i]);
-            
-            @try {
-                XCObjectRegistry *registry = [XCObjectRegistry objectRegistryWithXcodePBXProjectText:text];
-                printf("%s\n", registry.projectPropertyList.description.UTF8String);
-            } @catch (NSException *exception) {
-                fprintf(stderr, "Could not parse pbxproj: %s\n", exception.description.UTF8String);
-                fprintf(stderr, "%s\n", exception.callStackSymbols.description.UTF8String);
-            }
+            [registry save];
+
+        } @catch (NSException *exception) {
+            NSLog(@"Could not parse pbxproj: %@",exception.description);
         }
     }
     

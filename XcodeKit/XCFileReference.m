@@ -34,6 +34,7 @@ NSString * const XCFileReferencePathInBuiltProductsDirectory = @"BUILT_PRODUCTS_
 
 @implementation XCFileReference
 
+# pragma mark constractors
 + (XCFileReference *)createFileReferenceForRegularFileInRegistry:(XCObjectRegistry *)registry additionalProperties:(NSDictionary *)properties {
     static NSMutableDictionary *defaultProperties;
     static dispatch_once_t onceToken;
@@ -121,19 +122,18 @@ NSString * const XCFileReferencePathInBuiltProductsDirectory = @"BUILT_PRODUCTS_
     return [registry addResourceObjectOfClass:[self class] withProperties:retval];
 }
 
+
 - (void)removeFromParentGroup {
     [self.parentGroup removeChild:self];
 }
 
 #pragma mark Properties
-
 - (NSString *)name {
     return self.properties[@"name"];
 }
 
 - (void)setName:(NSString *)name {
     self.properties[@"name"] = name;
-    [self saveToObjectRegistry];
 }
 
 - (NSString *)path {
@@ -142,7 +142,6 @@ NSString * const XCFileReferencePathInBuiltProductsDirectory = @"BUILT_PRODUCTS_
 
 - (void)setPath:(NSString *)path {
     self.properties[@"path"] = path;
-    [self saveToObjectRegistry];
 }
 
 - (NSString *)pathResolveBase {
@@ -151,7 +150,6 @@ NSString * const XCFileReferencePathInBuiltProductsDirectory = @"BUILT_PRODUCTS_
 
 - (void)setPathResolveBase:(NSString *)pathResolveBase {
     self.properties[@"sourceTree"] = pathResolveBase;
-    [self saveToObjectRegistry];
 }
 
 - (NSString *)explicitFileType {
@@ -160,7 +158,6 @@ NSString * const XCFileReferencePathInBuiltProductsDirectory = @"BUILT_PRODUCTS_
 
 - (void)setExplicitFileType:(NSString *)explicitFileType {
     self.properties[@"explicitFileType"] = explicitFileType;
-    [self saveToObjectRegistry];
 }
 
 - (BOOL)includeInIndex {
@@ -181,7 +178,6 @@ NSString * const XCFileReferencePathInBuiltProductsDirectory = @"BUILT_PRODUCTS_
 
 - (void)setIncludeInIndex:(BOOL)includeInIndex {
     self.properties[@"includeInIndex"] = includeInIndex ? @"1" : @"0";
-    [self saveToObjectRegistry];
 }
 
 @end

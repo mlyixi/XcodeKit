@@ -30,6 +30,7 @@
 
 @implementation XCProject
 
+#pragma mark constractor
 + (XCProject *)createProjectWithMainGroup:(XCGroup *)group inRegistry:(XCObjectRegistry *)registry {
     XCGroup *productsGroup = [XCGroup createLogicalGroupWithName:@"Products" inRegistry:registry];
     [group addChildGroup:productsGroup];
@@ -73,9 +74,8 @@
 }
 
 #pragma mark Properties
-
 - (XCConfigurationList *)configurationList {
-    return [self.registry objectOfClass:[XCConfigurationList class] withIdentifier:self.properties[@"buildConfigurationList"]];
+    return [self.registry objectOfClass:[XCConfigurationList class] withKey:self.properties[@"buildConfigurationList"]];
 }
 
 - (void)setConfigurationList:(XCConfigurationList *)configurationList {
@@ -84,42 +84,39 @@
 }
 
 - (XCGroup *)mainGroup {
-    return [self.registry objectOfClass:[XCGroup class] withIdentifier:self.properties[@"mainGroup"]];
+    return [self.registry objectOfClass:[XCGroup class] withKey:self.properties[@"mainGroup"]];
 }
 
 - (void)setMainGroup:(XCGroup *)mainGroup {
-    [self.registry setResourceObject:mainGroup];
     self.properties[@"mainGroup"] = mainGroup.identifier;
 }
 
 - (XCGroup *)productReferenceGroup {
-    return [self.registry objectOfClass:[XCGroup class] withIdentifier:self.properties[@"productRefGroup"]];
+    return [self.registry objectOfClass:[XCGroup class] withKey:self.properties[@"productRefGroup"]];
 }
 
 - (void)setProductReferenceGroup:(XCGroup *)productReferenceGroup {
-    [self.registry setResourceObject:productReferenceGroup];
     self.properties[@"productRefGroup"] = productReferenceGroup.identifier;
 }
 
 - (NSMutableArray *)targets {
     NSMutableArray *array = [NSMutableArray array];
     
-    for (XCObjectIdentifier *ident in self.properties[@"targets"]) {
-        [array addObject:[self.registry objectOfClass:[XCTarget class] withIdentifier:ident]];
+    for (NSString *key in self.properties[@"targets"]) {
+        [array addObject:[self.registry objectOfClass:[XCTarget class] withKey:key]];
     }
     
     return array;
 }
 
 - (void)setTargets:(NSMutableArray *)targets {
-    NSMutableArray *identifiers = [NSMutableArray array];
+    NSMutableArray *keys = [NSMutableArray array];
     
     for (XCTarget *target in targets) {
-        [self.registry setResourceObject:target];
-        [identifiers addObject:target.identifier];
+        [keys addObject:target.identifier.key];
     }
     
-    self.properties[@"targets"] = identifiers;
+    self.properties[@"targets"] = keys;
 }
 
 - (NSMutableDictionary *)attributes {

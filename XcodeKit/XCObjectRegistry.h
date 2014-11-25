@@ -33,29 +33,46 @@ extern NSString * const XCInvalidProjectFileException;
 @class XCResource, XCProject, XCGroup;
 @interface XCObjectRegistry : NSObject
 
-// This method returns an XCObjectRegistry instance equipped with an
-// XCProject instance, a root XCGroup, and an XCConfigurationList instance.
-+ (XCObjectRegistry *)objectRegistryForEmptyProjectWithName:(NSString *)projectName;
-+ (XCObjectRegistry *)objectRegistryWithXcodePBXProjectText:(NSString *)pbxproj;
-- (id)initWithProjectPropertyList:(NSDictionary *)propertyList;
 
+// This method create empty XCObjectRegistry instance
++ (XCObjectRegistry *)objectRegistryForEmptyProjectWithName:(NSString *)projectName;
+
+/// These methods return XCObjectRegistry instance from XcodeProject
++ (XCObjectRegistry *)objectRegistryWithXcodeProject:(NSString *)filePath;
+- (id)initWithXcodeProject:(NSString *)filePath;
+
+/// @properties
+@property (copy) NSString *filePath;
 @property (assign) NSInteger objectVersion;
 @property (readonly, strong) NSMutableDictionary *projectPropertyList;
 @property (strong) XCProject *project;
 
-- (NSString *)xcodePBXProjectText;
-- (NSMutableDictionary *)objectDictionary;
-- (void)removeUnreferencedResources;
+/// save() save the objects to XcodeProject.
+- (void)save;
 
-// If the XCResource instance returned from this method has its resourceDescription
-// property set to a non-nil value, its value will be propagated to the targetDescription
-// property on the passed-in XCObjectIdentifier.
+/// the project's objects section.
+- (NSMutableDictionary *)objectDictionary;
+
+
+/// return the abstract XCResource instance from its identifier.
 - (XCResource *)objectWithIdentifier:(XCObjectIdentifier *)identifier;
-- (id)objectOfClass:(Class)cls withIdentifier:(XCObjectIdentifier *)identifier;
+
+/// return the real XCResource instance from its identifier. As the parent cannot cast to child, this method is much useful.
+- (id)objectOfClass:(Class)cls withKey:(NSString *)key;
+
+/// return the XCResource's properties from its identifier. We modify the object according to its properties which is a value of the objectDictionary
 - (NSDictionary *)propertiesForObjectWithIdentifier:(XCObjectIdentifier *)identifier;
 
+/// create a XCResource and add to the objectDictionary
 - (id)addResourceObjectOfClass:(Class)cls withProperties:(NSDictionary *)properties;
+
+/// save the modified XCResource to the objectDictionary
 - (void)setResourceObject:(XCResource *)resource;
+
+/// remove XCResource according to the identifier.
 - (void)removeResourceObjectWithIdentifier:(XCObjectIdentifier *)identifier;
+
+/// remove all unreferneced XCResources.
+- (void)removeUnreferencedResources;
 
 @end

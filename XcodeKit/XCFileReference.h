@@ -34,21 +34,22 @@ extern NSString * const XCFileReferencePathInBuiltProductsDirectory;
 @class XCGroup;
 @interface XCFileReference : XCResource
 
+/// create XCFileReference
 + (XCFileReference *)createFileReferenceForRegularFileInRegistry:(XCObjectRegistry *)registry additionalProperties:(NSDictionary *)properties;
 + (XCFileReference *)createFileReferenceForFrameworkWithName:(NSString *)name path:(NSString *)path inRegistry:(XCObjectRegistry *)registry additionalProperties:(NSDictionary *)properties;
 + (XCFileReference *)createFileReferenceForSDKFrameworkWithName:(NSString *)name inRegistry:(XCObjectRegistry *)registry additionalProperties:(NSDictionary *)properties;
 + (XCFileReference *)createFileReferenceForSDKLibraryWithName:(NSString *)name inRegistry:(XCObjectRegistry *)registry additionalProperties:(NSDictionary *)properties;
 + (XCFileReference *)createFileReferenceForApplicationProductWithName:(NSString *)name inRegistry:(XCObjectRegistry *)registry additionalProperties:(NSDictionary *)properties;
 
+/// remove self
 - (void)removeFromParentGroup;
 
-#pragma mark Properties
 
+/// @properties
 @property (strong) XCGroup *parentGroup;
-
 @property (strong) NSString *name;
 @property (strong) NSString *path;
-// This property's value can be one of XCFileReferencePathInGroup, XCFileReferencePathInSDK, or XCFileReferencePathInBuiltProductsDirectory
+/// This property's value can be one of XCFileReferencePathInGroup, XCFileReferencePathInSDK, or XCFileReferencePathInBuiltProductsDirectory
 @property (strong) NSString *pathResolveBase;
 @property (strong) NSString *explicitFileType;
 @property (strong) NSString *lastKnownFileType;

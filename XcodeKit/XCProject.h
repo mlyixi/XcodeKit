@@ -33,13 +33,15 @@
 
 @interface XCProject : XCResource
 
-// This method creates the product-reference group as "Products" at the end of the main XCGroup. It also creates an empty XCConfigurationList.
+/// This method creates the product-reference group as "Products" at the end of the main XCGroup. It also creates an empty XCConfigurationList.
 + (XCProject *)createProjectWithMainGroup:(XCGroup *)group inRegistry:(XCObjectRegistry *)registry;
-// This method creates an empty XCConfigurationList.
+
+/// This method creates an empty XCConfigurationList.
 + (XCProject *)createProjectWithMainGroup:(XCGroup *)group productReferenceGroup:(XCGroup *)productsGroup inRegistry:(XCObjectRegistry *)registry;
 + (XCProject *)createProjectWithMainGroup:(XCGroup *)group productReferenceGroup:(XCGroup *)productsGroup buildConfigurationList:(XCConfigurationList *)configurationList inRegistry:(XCObjectRegistry *)registry;
 
-#pragma mark Properties
+
+/// @Properties
 
 @property (strong) XCConfigurationList *configurationList;
 @property (strong) XCGroup *mainGroup;

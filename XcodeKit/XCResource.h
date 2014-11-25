@@ -28,21 +28,21 @@
 #import <Foundation/Foundation.h>
 #import "XCObjectIdentifier.h"
 #import "XCObjectRegistry.h"
-
+/*
+    The abstract class for XCResources
+*/
 @interface XCResource : NSObject
 
+/// initialator
 - (instancetype)initWithIdentifier:(XCObjectIdentifier *)identifier registry:(XCObjectRegistry *)registry;
+
+/// equals [registry setResourceObject];
 - (void)saveToObjectRegistry;
 
-#pragma mark Properties
-
+/// @Properties
+/// An XCResource awlays has a registry(project/rootObject), and identifier(key) and its properties. Its children just has some special @property (or other XCResources here) from its properties(the dictionary)
 @property (readonly, strong) XCObjectRegistry *registry;
 @property (readonly, strong) XCObjectIdentifier *identifier;
 @property (readonly, strong) NSMutableDictionary *properties;
-
-/// This is the description of the resource, as used in the \c targetDescription property on \c XCObjectIdentifier.
-/// \par Setting this property will automatically propagate its value to all new XCObjectIdentifiers created after this
-/// property is set. This value will also be written out to the pbxproj file.
-@property (strong) NSString *resourceDescription;
 
 @end

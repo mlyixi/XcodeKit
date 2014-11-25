@@ -29,25 +29,25 @@
 
 @implementation XCResource
 
+#pragma mark initiator
 - (instancetype)initWithIdentifier:(XCObjectIdentifier *)identifier registry:(XCObjectRegistry *)registry {
     self = [super init];
     
     if (self) {
         _identifier = identifier;
         _registry = registry;
-        _properties = [NSMutableDictionary dictionary];
-        self.resourceDescription = nil;
+        _properties = [[registry propertiesForObjectWithIdentifier:identifier] mutableCopy];
     }
     
     return self;
 }
 
+#pragma mark save to registry
 - (void)saveToObjectRegistry {
     [self.registry setResourceObject:self];
 }
 
 #pragma mark NSObject
-
 - (BOOL)isEqual:(id)object {
     if (self == object) return YES;
     if (![object isKindOfClass:[self class]]) return NO;

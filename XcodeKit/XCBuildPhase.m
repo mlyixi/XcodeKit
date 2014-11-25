@@ -30,8 +30,8 @@
 @implementation XCBuildPhase
 
 - (XCBuildFile *)buildFileWithName:(NSString *)name {
-    for (XCObjectIdentifier *ident in self.properties[@"files"]) {
-        XCBuildFile *file = [self.registry objectOfClass:[XCBuildFile class] withIdentifier:ident];
+    for (NSString *key in self.properties[@"files"]) {
+        XCBuildFile *file = [self.registry objectOfClass:[XCBuildFile class] withKey:key];
         if ([file.fileReference.name isEqualToString:name]) return file;
     }
     
@@ -39,8 +39,8 @@
 }
 
 - (XCBuildFile *)buildFileWithPath:(NSString *)path {
-    for (XCObjectIdentifier *ident in self.properties[@"files"]) {
-        XCBuildFile *file = [self.registry objectOfClass:[XCBuildFile class] withIdentifier:ident];
+    for (NSString *key in self.properties[@"files"]) {
+        XCBuildFile *file = [self.registry objectOfClass:[XCBuildFile class] withKey:key];
         if ([file.fileReference.path isEqualToString:path]) return file;
     }
     
@@ -48,8 +48,8 @@
 }
 
 - (XCFileReference *)buildFileReferenceWithName:(NSString *)name {
-    for (XCObjectIdentifier *ident in self.properties[@"files"]) {
-        XCBuildFile *file = [self.registry objectOfClass:[XCBuildFile class] withIdentifier:ident];
+    for (NSString *key in self.properties[@"files"]) {
+        XCBuildFile *file = [self.registry objectOfClass:[XCBuildFile class] withKey:key];
         if ([file.fileReference.name isEqualToString:name]) return file.fileReference;
     }
     
@@ -57,8 +57,8 @@
 }
 
 - (XCFileReference *)buildFileReferenceWithPath:(NSString *)path {
-    for (NSString *ident in self.properties[@"files"]) {
-        XCBuildFile *file = [self.registry objectOfClass:[XCBuildFile class] withIdentifier:[[XCObjectIdentifier alloc] initWithKey:ident]];
+    for (NSString *key in self.properties[@"files"]) {
+        XCBuildFile *file = [self.registry objectOfClass:[XCBuildFile class] withKey:key];
         if ([file.fileReference.path isEqualToString:path]) return file.fileReference;
     }
     
@@ -69,8 +69,7 @@
     NSMutableArray *references = [NSMutableArray array];
     
     for (NSString *key in self.properties[@"files"]) {
-        XCObjectIdentifier *ident = [[XCObjectIdentifier alloc] initWithKey:key];
-        XCBuildFile *buildFile = [self.registry objectOfClass:[XCBuildFile class] withIdentifier:ident];
+        XCBuildFile *buildFile = [self.registry objectOfClass:[XCBuildFile class] withKey:key];
         [references addObject:buildFile.fileReference];
     }
     
@@ -83,7 +82,7 @@
     
     XCBuildFile *file = [XCBuildFile createBuildFileWithFileReference:reference buildSettings:dictionary inRegistry:self.registry];
     [self.registry setResourceObject:file];
-    [self.properties[@"files"] addObject:file.identifier];
+    [self.properties[@"files"] addObject:file.identifier.key];
 }
 
 @end
@@ -182,12 +181,11 @@
         defaultProperties[@"inputPaths"] = [NSMutableArray array];
         defaultProperties[@"outputPaths"] = [NSMutableArray array];
         defaultProperties[@"runOnlyForDeploymentPostprocessing"] = @"0";
+        defaultProperties[@"shellPath"]=interpreter;
+        defaultProperties[@"shellScript"]=source;
     });
     
     NSMutableDictionary *finalProperties = [defaultProperties copy];
-    finalProperties[@"shellPath"] = interpreter;
-    finalProperties[@"shellScript"] = source;
-    
     return [registry addResourceObjectOfClass:[self class] withProperties:finalProperties];
 }
 

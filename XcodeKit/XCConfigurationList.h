@@ -30,13 +30,16 @@
 
 @interface XCConfigurationList : XCResource
 
+/// create XCConfigurationList
 + (XCConfigurationList *)createConfigurationListInRegistry:(XCObjectRegistry *)registry;
 
 - (NSArray *)configurations;
+
 - (void)addConfigurationWithName:(NSString *)configName;
 - (void)addConfigurationWithName:(NSString *)configName block:(void (^)(XCConfiguration *configuration))block;
 - (void)removeConfigurationWithName:(NSString *)configName;
 
+/// default configuration
 - (NSString *)defaultConfigurationName;
 - (void)setDefaultConfigurationName:(NSString *)name;
 

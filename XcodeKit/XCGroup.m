@@ -27,6 +27,7 @@
 
 #import "XCGroup.h"
 
+# pragma mark helpers
 static NSArray *XCArrayWhere(NSArray *source, BOOL (^block)(id object)) {
     NSMutableArray *retval = [NSMutableArray array];
     NSUInteger count = source.count;
@@ -62,7 +63,8 @@ static NSArray *XCArrayMap(NSArray *source, id (^block)(id oldValue)) {
     return retval;
 }
 
-#pragma mark -
+
+
 
 @implementation XCGroup
 
@@ -87,7 +89,6 @@ static NSArray *XCArrayMap(NSArray *source, id (^block)(id oldValue)) {
     finalProperties[@"name"] = name;
     
     XCGroup *retval = [registry addResourceObjectOfClass:[self class] withProperties:finalProperties];
-    retval.resourceDescription = name;
     return retval;
 }
 
@@ -120,13 +121,11 @@ static NSArray *XCArrayMap(NSArray *source, id (^block)(id oldValue)) {
 }
 
 - (void)addChildGroup:(XCGroup *)group {
-    [self.properties[@"children"] addObject:group.identifier];
-    [self.registry setResourceObject:group];
+    [self.properties[@"children"] addObject:group.identifier.key];
 }
 
 - (void)addChildFileReference:(XCFileReference *)reference {
-    [self.properties[@"children"] addObject:reference.identifier];
-    [self.registry setResourceObject:reference];
+    [self.properties[@"children"] addObject:reference.identifier.key];
 }
 
 - (void)removeChild:(XCResource *)resource {
@@ -147,7 +146,9 @@ static NSArray *XCArrayMap(NSArray *source, id (^block)(id oldValue)) {
 
 @end
 
-#pragma mark -
+
+
+
 
 @implementation XCVariantGroup
 

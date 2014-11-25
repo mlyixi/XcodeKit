@@ -29,6 +29,7 @@
 
 @implementation XCTarget
 
+# pragma mark constractors
 + (XCTarget *)createApplicationTargetWithName:(NSString *)name inRegistry:(XCObjectRegistry *)registry {
     static NSMutableDictionary *defaultProperties;
     static dispatch_once_t onceToken;
@@ -42,13 +43,12 @@
     });
     
     XCConfigurationList *configurationList = [XCConfigurationList createConfigurationListInRegistry:registry];
-    configurationList.resourceDescription = [NSString stringWithFormat:@"Build configuration list for PBXNativeTarget \"%@\"", name];
     [registry setResourceObject:configurationList];
     
     NSMutableDictionary *finalProperties = [defaultProperties copy];
     finalProperties[@"name"] = name;
     finalProperties[@"productName"] = name;
-    finalProperties[@"buildConfigurationList"] = configurationList.identifier;
+    finalProperties[@"buildConfigurationList"] = configurationList.identifier.key;
     
     return [registry addResourceObjectOfClass:[self class] withProperties:finalProperties];
 }
@@ -64,21 +64,19 @@
     });
     
     XCConfigurationList *configurationList = [XCConfigurationList createConfigurationListInRegistry:registry];
-    configurationList.resourceDescription = [NSString stringWithFormat:@"Build configuration list for PBXNativeTarget \"%@\"", name];
     [registry setResourceObject:configurationList];
     
     NSMutableDictionary *finalProperties = [defaultProperties copy];
     finalProperties[@"name"] = name;
     finalProperties[@"productName"] = name;
-    finalProperties[@"buildConfigurationList"] = configurationList.identifier;
+    finalProperties[@"buildConfigurationList"] = configurationList.identifier.key;
     
     return [registry addResourceObjectOfClass:[self class] withProperties:finalProperties];
 }
 
 #pragma mark Properties
-
 - (XCConfigurationList *)configurationList {
-    return (XCConfigurationList *) [self.registry objectWithIdentifier:self.properties[@"buildConfigurationList"]];
+    return [self.registry objectOfClass:[XCConfigurationList class] withKey:self.properties[@"buildConfigurationList"]];
 }
 
 - (NSString *)name {
@@ -98,32 +96,30 @@
 }
 
 - (XCFileReference *)productReference {
-    return [self.registry objectOfClass:[XCFileReference class] withIdentifier:self.properties[@"productReference"]];
+    return [self.registry objectOfClass:[XCFileReference class] withKey:self.properties[@"productReference"]];
 }
 
 - (void)setProductReference:(XCFileReference *)productReference {
-    [self.registry setResourceObject:productReference];
-    self.properties[@"productReference"] = productReference.identifier;
+    self.properties[@"productReference"] = productReference.identifier.key;
 }
 
 - (NSArray *)buildDependencies {
     NSMutableArray *retval = [NSMutableArray array];
     
-    for (XCObjectIdentifier *ident in self.properties[@"dependencies"]) {
-        [retval addObject:[self.registry objectOfClass:[XCTargetDependency class] withIdentifier:ident]];
+    for (NSString *key in self.properties[@"dependencies"]) {
+        [retval addObject:[self.registry objectOfClass:[XCTargetDependency class] withKey:key]];
     }
     
     return retval;
 }
 
 - (void)addBuildDependency:(XCTargetDependency *)dependency {
-    [self.registry setResourceObject:dependency];
-    [self.properties[@"dependencies"] addObject:dependency.identifier];
+    [self.properties[@"dependencies"] addObject:dependency.identifier.key];
 }
 
 - (BOOL)removeBuildDependency:(XCTargetDependency *)dependency {
-    if ([self.properties[@"dependencies"] containsObject:dependency.identifier]) {
-        [self.properties[@"dependencies"] removeObject:dependency.identifier];
+    if ([self.properties[@"dependencies"] containsObject:dependency.identifier.key]) {
+        [self.properties[@"dependencies"] removeObject:dependency.identifier.key];
         return YES;
     } else {
         return NO;
@@ -133,10 +129,9 @@
 - (NSArray *)buildPhases {
     NSMutableArray *retval = [NSMutableArray array];
     
-    for (XCObjectIdentifier *ident in self.properties[@"buildPhases"]) {
-        [retval addObject:[self.registry objectOfClass:[XCBuildPhase class] withIdentifier:ident]];
+    for (NSString *key in self.properties[@"buildPhases"]) {
+        [retval addObject:[self.registry objectOfClass:[XCBuildPhase class] withKey:key]];
     }
-    
     return retval;
 }
 
@@ -145,22 +140,21 @@
 }
 
 - (void)addBuildPhase:(XCBuildPhase *)phase {
-    [self.registry setResourceObject:phase];
-    [self.properties[@"buildPhases"] addObject:phase.identifier];
+    [self.properties[@"buildPhases"] addObject:phase.identifier.key];
 }
 
 - (void)insertBuildPhase:(XCBuildPhase *)phase atIndex:(NSUInteger)index {
-    [self.registry setResourceObject:phase];
-    [self.properties[@"buildPhases"] insertObject:phase.identifier atIndex:index];
+    [self.properties[@"buildPhases"] insertObject:phase.identifier.key atIndex:index];
 }
 
 - (void)removeBuildPhase:(XCBuildPhase *)phase {
-    [self.properties[@"buildPhases"] removeObject:phase.identifier];
+    [self.properties[@"buildPhases"] removeObject:phase.identifier.key];
 }
 
 @end
 
-#pragma mark -
+
+
 
 @implementation XCContainerItemProxy
 
@@ -174,8 +168,8 @@
     });
     
     NSMutableDictionary *finalProperties = [defaultProperties copy];
-    finalProperties[@"containerPortal"] = projectIdentifier;
-    finalProperties[@"remoteGlobalIDString"] = targetIdentifier;
+    finalProperties[@"containerPortal"] = projectIdentifier.key;
+    finalProperties[@"remoteGlobalIDString"] = targetIdentifier.key;
     finalProperties[@"remoteInfo"] = name;
     
     return [registry addResourceObjectOfClass:[self class] withProperties:finalProperties];
@@ -185,8 +179,7 @@
     return [self createContainerItemProxyWithProjectIdentifier:projectIdentifier targetIdentifier:target.identifier targetName:target.name inRegistry:registry];
 }
 
-#pragma mark Properties
-
+/// @properties
 - (XCObjectIdentifier *)projectIdentifier {
     return self.properties[@"containerPortal"];
 }
@@ -201,27 +194,28 @@
 
 @end
 
-#pragma mark -
+
+
+
 
 @implementation XCTargetDependency
 
 + (XCTargetDependency *)createTargetDependencyWithTarget:(XCTarget *)target targetProxy:(XCContainerItemProxy *)proxy inRegistry:(XCObjectRegistry *)registry {
     NSMutableDictionary *properties = [NSMutableDictionary dictionary];
     properties[@"isa"] = @"PBXTargetDependency";
-    properties[@"target"] = target.identifier;
-    properties[@"targetProxy"] = proxy.identifier;
+    properties[@"target"] = target.identifier.key;
+    properties[@"targetProxy"] = proxy.identifier.key;
     
     return [registry addResourceObjectOfClass:[self class] withProperties:properties];
 }
 
-#pragma mark Properties
-
+/// @properties
 - (XCTarget *)target {
-    return [self.registry objectOfClass:[XCTarget class] withIdentifier:self.properties[@"target"]];
+    return [self.registry objectOfClass:[XCTarget class] withKey:self.properties[@"target"]];
 }
 
 - (XCContainerItemProxy *)targetProxy {
-    return [self.registry objectOfClass:[XCContainerItemProxy class] withIdentifier:self.properties[@"targetProxy"]];
+    return [self.registry objectOfClass:[XCContainerItemProxy class] withKey:self.properties[@"targetProxy"]];
 }
 
 @end

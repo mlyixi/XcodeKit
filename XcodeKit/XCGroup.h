@@ -30,8 +30,10 @@
 
 @interface XCGroup : XCResource
 
+/// create XCGroup
 + (XCGroup *)createLogicalGroupWithName:(NSString *)name inRegistry:(XCObjectRegistry *)registry;
 
+/// @properties
 @property (strong) XCGroup *parentGroup;
 
 - (NSArray *)children;
@@ -45,7 +47,8 @@
 
 @end
 
-#pragma mark -
+
+
 
 @interface XCVariantGroup : XCGroup
 

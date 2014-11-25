@@ -29,6 +29,7 @@
 
 @implementation XCConfigurationList
 
+# pragma mark constructor
 + (XCConfigurationList *)createConfigurationListInRegistry:(XCObjectRegistry *)registry {
     static NSMutableDictionary *defaultProperties;
     static dispatch_once_t onceToken;
@@ -43,11 +44,11 @@
     return [registry addResourceObjectOfClass:[self class] withProperties:[defaultProperties copy]];
 }
 
-
+# pragma mark configurations
 - (NSArray *)configurations {
     NSMutableArray *retval = [NSMutableArray array];
-    for (XCObjectIdentifier *ident in self.properties[@"buildConfigurations"]) {
-        [retval addObject:[self.registry objectOfClass:[XCConfiguration class] withIdentifier:ident]];
+    for (NSString *key in self.properties[@"buildConfigurations"]) {
+        [retval addObject:[self.registry objectOfClass:[XCConfiguration class] withKey:key]];
     }
     
     return retval;
@@ -59,10 +60,9 @@
 
 - (void)addConfigurationWithName:(NSString *)configName block:(void (^)(XCConfiguration *configuration))block {
     XCConfiguration *configuration = [XCConfiguration createConfigurationWithName:configName inRegistry:self.registry];
-    [self.properties[@"buildConfigurations"] addObject:configuration.identifier];
+    [self.properties[@"buildConfigurations"] addObject:configuration.identifier.key];
     
     if (block != NULL) block(configuration);
-    [configuration saveToObjectRegistry];
 }
 
 - (void)removeConfigurationWithName:(NSString *)configName {
@@ -74,8 +74,9 @@
         }
     }
     
-    [self.properties[@"buildConfigurations"] removeObject:configurationToRemove.identifier];
+    [self.properties[@"buildConfigurations"] removeObject:configurationToRemove.identifier.key];
 }
+
 
 - (NSString *)defaultConfigurationName {
     return self.properties[@"defaultConfigurationName"];

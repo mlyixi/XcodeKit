@@ -32,6 +32,7 @@ NSString * const XCConfigurationNameRelease = @"Release";
 
 @implementation XCConfiguration
 
+# pragma mark constructor
 + (XCConfiguration *)createConfigurationWithName:(NSString *)name inRegistry:(XCObjectRegistry *)registry {
     NSMutableDictionary *finalProperties = [[NSMutableDictionary alloc] init];
     finalProperties[@"isa"] = @"XCBuildConfiguration";
@@ -42,7 +43,6 @@ NSString * const XCConfigurationNameRelease = @"Release";
 }
 
 #pragma mark Properties
-
 - (NSString *)name {
     return self.properties[@"name"];
 }

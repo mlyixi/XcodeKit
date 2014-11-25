@@ -51,53 +51,61 @@
 #import "XCResource.h"
 #import "XCBuildFile.h"
 
+/// abstract XCBuildPhase
 @interface XCBuildPhase : XCResource
 
-- (NSArray *)allBuildFileReferences;
 - (XCBuildFile *)buildFileWithName:(NSString *)name;
 - (XCBuildFile *)buildFileWithPath:(NSString *)path;
 - (XCFileReference *)buildFileReferenceWithName:(NSString *)name;
 - (XCFileReference *)buildFileReferenceWithPath:(NSString *)path;
 
+- (NSArray *)allBuildFileReferences;
 // This method adds a build file only if it there is no build file
 // with the same path or name already present in the build phase.
 - (void)addBuildFileWithReference:(XCFileReference *)reference buildSettings:(NSDictionary *)dictionary;
 
 @end
 
-#pragma mark -
+
+
 
 @interface XCLinkFrameworksBuildPhase : XCBuildPhase
 
+/// create XCLinkFrameworksBuildPhase
 + (XCLinkFrameworksBuildPhase *)createLinkFrameworksBuildPhaseInRegistry:(XCObjectRegistry *)registry;
 
 @end
 
-#pragma mark -
+
+
 
 @interface XCCompileSourcesBuildPhase : XCBuildPhase
 
+/// create XCCompileSourcesBuildPhase
 + (XCCompileSourcesBuildPhase *)createCompileSourcesBuildPhaseInRegistry:(XCObjectRegistry *)registry;
 
 - (void)addBuildFileWithReference:(XCFileReference *)reference useAutomaticReferenceCounting:(BOOL)useARC buildSettings:(NSDictionary *)dictionary;
 
 @end
 
-#pragma mark -
 
+/// create XCCopyResourcesBuildPhase
 @interface XCCopyResourcesBuildPhase : XCBuildPhase
 
 + (XCCopyResourcesBuildPhase *)createCopyResourcesBuildPhaseInRegistry:(XCObjectRegistry *)registry;
 
 @end
 
-#pragma mark -
+
+
 
 @interface XCRunScriptBuildPhase : XCBuildPhase
 
+/// create XCCopyResourcesBuildPhase
 + (XCRunScriptBuildPhase *)createRunScriptBuildPhaseWithScript:(NSString *)source inRegistry:(XCObjectRegistry *)registry; // interpreter defaults to /bin/sh
 + (XCRunScriptBuildPhase *)createRunScriptBuildPhaseWithScript:(NSString *)source interpreterPath:(NSString *)interpreter inRegistry:(XCObjectRegistry *)registry;
 
+/// @properties
 @property (assign) BOOL runOnlyWhenInstalling;
 @property (strong) NSString *scriptSource;
 @property (strong) NSString *interpreterPath;
@@ -109,18 +117,23 @@
 
 @end
 
-#pragma mark -
+
+
 
 @interface XCCopyHeadersBuildPhase : XCBuildPhase
 
+/// create XCCopyHeadersBuildPhase
 + (XCCopyHeadersBuildPhase *)createCopyHeadersBuildPhaseInRegistry:(XCObjectRegistry *)registry;
+
 
 - (void)addPublicHeaderFileWithReference:(XCFileReference *)reference buildSettings:(NSDictionary *)dictionary;
 - (void)addPrivateHeaderFileWithReference:(XCFileReference *)reference buildSettings:(NSDictionary *)dictionary;
 
 @end
 
-#pragma mark -
+
+
+
 
 typedef NS_ENUM(NSInteger, XCCopyFilesDestination) {
     XCCopyFilesDestinationAbsolutePath = 0,
@@ -137,10 +150,12 @@ typedef NS_ENUM(NSInteger, XCCopyFilesDestination) {
 
 @interface XCCopyFilesBuildPhase : XCBuildPhase
 
+/// create XCCopyFilesBuildPhase
 + (XCCopyFilesBuildPhase *)createCopyFilesBuildPhaseWithName:(NSString *)name destination:(XCCopyFilesDestination)destination destinationSubdirectory:(NSString *)subdir inRegistry:(XCObjectRegistry *)registry;
 
 + (XCCopyFilesBuildPhase *)createCopyFilesBuildPhaseWithDestination:(XCCopyFilesDestination)destination destinationSubdirectory:(NSString *)subdir inRegistry:(XCObjectRegistry *)registry;
 
+/// @properties
 @property (assign) BOOL copyOnlyWhenInstalling;
 @property (assign) XCCopyFilesDestination destination;
 @property (strong) NSString *destinationSubdirectory;

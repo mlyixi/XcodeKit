@@ -55,14 +55,10 @@
 }
 
 - (id)init {
-    return [self initWithTargetDescription:nil existingKeys:@[]];
+    return [self initWithExistingKeys:@[]];
 }
 
-- (id)initWithTargetDescription:(NSString *)targetDescription {
-    return [self initWithTargetDescription:targetDescription existingKeys:@[]];
-}
-
-- (id)initWithTargetDescription:(NSString *)targetDescription existingKeys:(NSArray *)existingKeys {
+- (id)initWithExistingKeys:(NSArray *)existingKeys {
     const NSInteger maxIterations = 10;
     NSInteger iterationCount = 0;
     
@@ -76,24 +72,18 @@
         }
     }
     
-    return [self initWithKey:newIdentifier targetDescription:targetDescription];
+    return [self initWithKey:newIdentifier];
 }
 
-- (id)initWithKey:(NSString *)key targetDescription:(NSString *)targetDescription {
+- (id)initWithKey:(NSString *)key{
     self = [super init];
     
     if (self) {
         _key = key;
-        _targetDescription = targetDescription;
     }
     
     return self;
 }
-
-- (instancetype)initWithKey:(NSString *)key {
-    return [self initWithKey:key targetDescription:nil];
-}
-
 #pragma mark NSCoding
 
 + (BOOL)supportsSecureCoding {
@@ -101,16 +91,14 @@
 }
 
 - (void)encodeWithCoder:(NSCoder *)coder {
-    [coder encodeObject:self.key forKey:@"XCObjectKey"];
-    [coder encodeObject:self.targetDescription forKey:@"XCTargetObjectDescription"];
+    [coder encodeObject:self.key forKey:@"key"];
 }
 
 - (id)initWithCoder:(NSCoder *)coder {
     self = [super init];
     
     if (self) {
-        _key = [coder decodeObjectOfClass:[NSString class] forKey:@"XCObjectKey"];
-        _targetDescription = [coder decodeObjectOfClass:[NSString class] forKey:@"XCTargetObjectDescription"];
+        _key = [coder decodeObjectOfClass:[NSString class] forKey:@"key"];
     }
     
     return self;
@@ -123,20 +111,19 @@
     if (![object isKindOfClass:[self class]]) return NO;
     
     XCObjectIdentifier *other = object;
-    return [self.key isEqualToString:other.key] && [self.targetDescription isEqualToString:other.targetDescription];
+    return [self.key isEqualToString:other.key];
 }
 
 - (NSUInteger)hash {
-    return self.key.hash ^ self.targetDescription.hash;
+    return self.key.hash;
 }
 
 - (NSString *)description {
-    if (self.targetDescription != nil) return [NSString stringWithFormat:@"%@ /* %@ */", self.key, self.targetDescription];
-    else return self.key;
+    return self.key;
 }
 
 - (NSString *)debugDescription {
-    return [NSString stringWithFormat:@"<%@ %p: key=%@ targetDescription=%@>", NSStringFromClass([self class]), self, self.key, self.targetDescription];
+    return [NSString stringWithFormat:@"<%@ %p: key=%@>", NSStringFromClass([self class]), self, self.key];
 }
 
 @end

@@ -29,6 +29,7 @@
 
 @implementation XCBuildFile
 
+#pragma mark constructors
 + (XCBuildFile *)createBuildFileWithFileReference:(XCFileReference *)fileReference inRegistry:(XCObjectRegistry *)registry {
     return [self createBuildFileWithFileReference:fileReference buildSettings:nil inRegistry:registry];
 }
@@ -54,7 +55,6 @@
 }
 
 #pragma mark Properties
-
 - (XCFileReference *)fileReference {
     XCResource *resource = [self.registry objectWithIdentifier:self.properties[@"fileRef"]];
     NSAssert([resource isKindOfClass:[XCFileReference class]], @"File reference %@ doesn't point to a file reference", self.properties[@"fileRef"]);
@@ -62,10 +62,8 @@
 }
 
 - (void)setFileReference:(XCFileReference *)fileReference {
-    XCObjectIdentifier *identifier = [[XCObjectIdentifier alloc] initWithKey:fileReference.identifier.key targetDescription:fileReference.name];
-    
-    [self.registry setResourceObject:fileReference];
-    self.properties[@"fileRef"] = identifier;
+    XCObjectIdentifier *identifier = [[XCObjectIdentifier alloc] initWithKey:fileReference.identifier.key];
+    self.properties[@"fileRef"] = identifier.key;
 }
 
 - (NSDictionary *)buildSettings {

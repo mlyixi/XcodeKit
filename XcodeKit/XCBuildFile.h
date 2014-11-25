@@ -30,12 +30,12 @@
 
 @interface XCBuildFile : XCResource
 
+/// create XCBuildFile
 + (XCBuildFile *)createBuildFileWithFileReference:(XCFileReference *)fileReference inRegistry:(XCObjectRegistry *)registry;
 + (XCBuildFile *)createBuildFileWithFileReference:(XCFileReference *)fileReference buildSettings:(NSDictionary *)buildSettings inRegistry:(XCObjectRegistry *)registry;
 + (XCBuildFile *)createBuildFileWithFileReference:(XCFileReference *)fileReference buildSettings:(NSDictionary *)buildSettings inRegistry:(XCObjectRegistry *)registry additionalProperties:(NSDictionary *)properties;
 
-#pragma mark Properties
-
+/// @Properties
 @property (strong) XCFileReference *fileReference;
 @property (strong) NSDictionary *buildSettings;
 
